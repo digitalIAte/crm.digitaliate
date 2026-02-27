@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { fetchLeads } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
+
 export default async function LeadsPage() {
     const leads = await fetchLeads();
 

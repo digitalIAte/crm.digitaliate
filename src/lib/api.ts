@@ -1,5 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "https://n8n.javiasl.es/webhook";
-const API_KEY = process.env.CRM_DASHBOARD_KEY || "sk_dash_67890";
+// Force static values to bypass bad environment variables injecting invalid internal IPs causing SNI TLS drops
+const API_URL = "https://n8n.javiasl.es/webhook";
+const API_KEY = "sk_dash_67890";
 
 import axios from 'axios';
 import https from 'https';
@@ -9,6 +10,8 @@ import https from 'https';
 const httpsAgent = new https.Agent({
     rejectUnauthorized: false,
 });
+
+axios.defaults.adapter = 'http';
 
 export interface Lead {
     id: string;

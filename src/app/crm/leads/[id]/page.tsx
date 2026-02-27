@@ -1,6 +1,8 @@
 import { fetchLeadById } from "@/lib/api";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function LeadDetailPage({ params }: { params: { id: string } }) {
     const data = await fetchLeadById(params.id);
 

@@ -13,14 +13,14 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
                         <Users size={20} />
                         <span>Leads</span>
                     </Link>
-                    <Link href="/crm" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
+                    <Link href="/crm/leads" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
                         <LayoutDashboard size={20} />
                         <span>Dashboard</span>
                     </Link>
-                    <Link href="/crm" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
+                    {/* <Link href="/crm/settings" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
                         <Settings size={20} />
                         <span>Settings</span>
-                    </Link>
+                    </Link> */}
                 </nav>
             </aside>
             <main className="flex-1 overflow-y-auto">

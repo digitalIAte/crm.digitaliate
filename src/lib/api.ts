@@ -1,5 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "http://localhost:5678/webhook";
-const API_KEY = process.env.CRM_DASHBOARD_KEY || "sk_dash_generada_a_mano_12345";
+const API_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "https://n8n.javiasl.es/webhook";
+const API_KEY = process.env.CRM_DASHBOARD_KEY || "sk_dash_67890";
 
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import https from 'https';

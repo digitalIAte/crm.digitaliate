@@ -6,13 +6,13 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies
-COPY dashboard/package.json dashboard/package-lock.json* ./
+COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY dashboard/ ./
+COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 RUN npm run build
 

@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "https://n8n.javiasl.es/webhook";
 const API_KEY = process.env.CRM_DASHBOARD_KEY || "sk_dash_67890";
 
-import { HttpsProxyAgent } from 'https-proxy-agent';
+import axios from 'axios';
 import https from 'https';
 
 // Because n8n is served behind a specific proxy/SNI that Node.js native fetch rejects,
@@ -21,15 +21,12 @@ export interface Lead {
 }
 
 export async function fetchLeads(): Promise<Lead[]> {
-    // Force Node to ignore unauthorized certs during this exact Next.js fetch
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
-        const res = await fetch(`${API_URL}/api/crm/leads`, {
+        const res = await axios.get(`${API_URL}/api/crm/leads`, {
             headers: { "X-API-KEY": API_KEY },
-            cache: "no-store"
+            httpsAgent: httpsAgent
         });
-        if (!res.ok) return [];
-        const data = await res.json();
+        const data = res.data;
         return Array.isArray(data) ? data : (data.data || []);
     } catch (error) {
         console.error("Failed to fetch leads", error);
@@ -38,15 +35,12 @@ export async function fetchLeads(): Promise<Lead[]> {
 }
 // Handle both { data: [...] } structure and raw [...] array structure
 export async function fetchLeadById(id: string) {
-    // Force Node to ignore unauthorized certs during this exact Next.js fetch
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
-        const res = await fetch(`${API_URL}/api/crm/leads/${id}`, {
+        const res = await axios.get(`${API_URL}/api/crm/leads/${id}`, {
             headers: { "X-API-KEY": API_KEY },
-            cache: "no-store"
+            httpsAgent: httpsAgent
         });
-        if (!res.ok) return null;
-        return await res.json();
+        return res.data;
     } catch (error) {
         console.error(`Failed to fetch lead ${id}`, error);
         return null;

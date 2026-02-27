@@ -18,6 +18,7 @@ export interface Lead {
     email: string;
     name: string;
     status: string;
+    stage: string;
     score: number;
     owner_email: string;
     created_at: string;
@@ -47,5 +48,37 @@ export async function fetchLeadById(id: string) {
     } catch (error) {
         console.error(`Failed to fetch lead ${id}`, error);
         return null;
+    }
+}
+
+export async function updateLead(id: string, updates: Partial<Lead>) {
+    try {
+        const res = await axios.patch(`${API_URL}/api/crm/leads/${id}`, updates, {
+            headers: {
+                "X-API-KEY": API_KEY,
+                "Content-Type": "application/json"
+            },
+            httpsAgent: httpsAgent
+        });
+        return res.data;
+    } catch (error) {
+        console.error(`Failed to update lead ${id}`, error);
+        throw error;
+    }
+}
+
+export async function createActivity(payload: { lead_id: string, type: string, note?: string, source?: string }) {
+    try {
+        const res = await axios.post(`${API_URL}/api/crm/activities`, payload, {
+            headers: {
+                "X-API-KEY": API_KEY,
+                "Content-Type": "application/json"
+            },
+            httpsAgent: httpsAgent
+        });
+        return res.data;
+    } catch (error) {
+        console.error(`Failed to create activity for lead ${payload.lead_id}`, error);
+        throw error;
     }
 }

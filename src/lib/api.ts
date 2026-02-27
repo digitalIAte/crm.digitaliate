@@ -21,30 +21,29 @@ export interface Lead {
 }
 
 export async function fetchLeads(): Promise<Lead[]> {
+    // Force Node to ignore unauthorized certs during this exact Next.js fetch
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
         const res = await fetch(`${API_URL}/api/crm/leads`, {
             headers: { "X-API-KEY": API_KEY },
-            cache: "no-store",
-            // @ts-ignore - Next.js/Node.js custom agent injection
-            agent: httpsAgent
+            cache: "no-store"
         });
         if (!res.ok) return [];
         const data = await res.json();
-        // Handle both { data: [...] } structure and raw [...] array structure
         return Array.isArray(data) ? data : (data.data || []);
     } catch (error) {
         console.error("Failed to fetch leads", error);
         return [];
     }
 }
-
+// Handle both { data: [...] } structure and raw [...] array structure
 export async function fetchLeadById(id: string) {
+    // Force Node to ignore unauthorized certs during this exact Next.js fetch
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
         const res = await fetch(`${API_URL}/api/crm/leads/${id}`, {
             headers: { "X-API-KEY": API_KEY },
-            cache: "no-store",
-            // @ts-ignore
-            agent: httpsAgent
+            cache: "no-store"
         });
         if (!res.ok) return null;
         return await res.json();

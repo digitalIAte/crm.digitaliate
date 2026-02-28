@@ -40,11 +40,13 @@ export async function fetchLeads(): Promise<Lead[]> {
 // Handle both { data: [...] } structure and raw [...] array structure
 export async function fetchLeadById(id: string) {
     try {
-        const res = await axios.get(`${API_URL}/api/crm/leads/${id}`, {
+        const res = await axios.get(`${API_URL}/30ad9040-92c3-467a-8a4a-c1a03fd9dd0b?id=${id}`, {
             headers: { "X-API-KEY": API_KEY },
             httpsAgent: httpsAgent
         });
-        return res.data;
+        const data = res.data;
+        if (!data || !data.lead) return null;
+        return data;
     } catch (error) {
         console.error(`Failed to fetch lead ${id}`, error);
         return null;

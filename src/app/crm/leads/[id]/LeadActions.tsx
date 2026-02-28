@@ -63,7 +63,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                         disabled={isUpdating}
                         value={lead.status}
                         onChange={(e) => handleStatusChange(e.target.value)}
-                        className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 text-sm"
                     >
                         <option value="new">New</option>
                         <option value="contacted">Contacted</option>
@@ -77,7 +77,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                         disabled={isUpdating}
                         value={lead.stage}
                         onChange={(e) => handleStageChange(e.target.value)}
-                        className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 text-sm"
                     >
                         <option value="inbound">Inbound</option>
                         <option value="discovery">Discovery</option>
@@ -85,14 +85,14 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                         <option value="won">Won</option>
                     </select>
                 </div>
-                {isUpdating && <div className="flex items-center text-sm text-indigo-500 animate-pulse mt-4">Saving...</div>}
+                {isUpdating && <div className="flex items-center text-sm text-digitaliate animate-pulse mt-4">Saving...</div>}
             </div>
 
             {/* Note Input */}
             <div className="mt-6 pt-4 border-t">
                 <h4 className="text-sm font-semibold mb-2">New Note</h4>
                 <textarea
-                    className="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-digitaliate outline-none"
                     rows={3}
                     placeholder="Add a note or log an external interaction..."
                     value={note}
@@ -102,7 +102,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                 <button
                     onClick={handleAddNote}
                     disabled={isAddingNote || !note.trim()}
-                    className="mt-2 bg-indigo-600 text-white text-sm font-medium px-5 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                    className="mt-2 bg-digitaliate text-white text-sm font-medium px-5 py-2 rounded-md hover:bg-digitaliate-dark disabled:opacity-50 transition-colors shadow-sm"
                 >
                     {isAddingNote ? "Saving Note..." : "Save Note"}
                 </button>

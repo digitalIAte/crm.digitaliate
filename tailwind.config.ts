@@ -11,6 +11,11 @@ const config: Config = {
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
+                digitaliate: {
+                    DEFAULT: "#ed273a",
+                    dark: "#8e2224",
+                    light: "#fdf7f8"
+                }
             },
         },
     },

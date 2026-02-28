@@ -16,7 +16,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
             <div className="flex justify-between items-center">
-                <Link href="/crm/leads" className="text-indigo-600 hover:text-indigo-800 font-medium mb-4 flex items-center">&larr; Back to Leads</Link>
+                <Link href="/crm/leads" className="text-digitaliate-dark hover:text-digitaliate font-bold mb-4 flex items-center">&larr; Back to Leads</Link>
             </div>
 
             <div className="bg-white shadow-sm rounded-xl p-8 border border-gray-100 flex flex-col md:flex-row justify-between items-start">
@@ -24,7 +24,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
                     <h2 className="text-3xl font-bold text-gray-900 mb-1">{lead.name || "Unknown"}</h2>
                     <p className="text-gray-500">{lead.email} {lead.phone ? `| ${lead.phone}` : ""}</p>
                     <div className="mt-5 flex items-center space-x-3">
-                        <span className="bg-gradient-to-r from-purple-100 to-indigo-100 text-indigo-800 font-semibold text-xs px-3 py-1 rounded-full border border-indigo-200 shadow-sm">
+                        <span className="bg-gradient-to-r from-red-50 to-red-100 text-digitaliate-dark font-bold text-xs px-3 py-1 rounded-full border border-red-200 shadow-sm">
                             Score: {lead.score}
                         </span>
                         <span className="bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full border border-slate-200">
@@ -71,7 +71,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
                                 <div key={a.id} className="group flex flex-col justify-center py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 -mx-4 px-4 transition duration-150">
                                     <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center space-x-2">
-                                            <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                            <span className="w-2 h-2 rounded-full bg-digitaliate"></span>
                                             <strong className="text-sm font-semibold text-gray-800 capitalize">{a.type}</strong>
                                         </div>
                                         <span className="text-xs text-gray-400 group-hover:text-gray-500 transition-colors">{new Date(a.created_at).toLocaleDateString()}</span>

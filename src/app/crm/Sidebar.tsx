@@ -16,10 +16,8 @@ export default function Sidebar() {
     return (
         <aside className="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-20">
             <div className="p-6 flex items-center space-x-3 border-b border-slate-800">
-                <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                    <span className="font-bold text-lg leading-none">C</span>
-                </div>
-                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                <img src="/images/logo_digitaliate.png" alt="Digitaliate" className="w-10 h-10 object-contain rounded-lg bg-white p-1" />
+                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-red-200 to-white bg-clip-text text-transparent">
                     Digitaliate CRM
                 </span>
             </div>
@@ -29,22 +27,22 @@ export default function Sidebar() {
                 <Link
                     href="/crm"
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/crm')
-                            ? 'bg-indigo-600 shadow-md shadow-indigo-900/20 text-white'
-                            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                        ? 'bg-digitaliate shadow-md shadow-red-900/20 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                         }`}
                 >
-                    <LayoutDashboard size={20} className={isActive('/crm') ? 'text-indigo-200' : 'text-slate-500 group-hover:text-slate-300'} />
+                    <LayoutDashboard size={20} className={isActive('/crm') ? 'text-red-100' : 'text-slate-500 group-hover:text-slate-300'} />
                     <span className="font-medium">Dashboard</span>
                 </Link>
 
                 <Link
                     href="/crm/leads"
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 flex-1 group ${isActive('/crm/leads')
-                            ? 'bg-indigo-600 shadow-md shadow-indigo-900/20 text-white'
-                            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                        ? 'bg-digitaliate shadow-md shadow-red-900/20 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                         }`}
                 >
-                    <Users size={20} className={isActive('/crm/leads') ? 'text-indigo-200' : 'text-slate-500 group-hover:text-slate-300'} />
+                    <Users size={20} className={isActive('/crm/leads') ? 'text-red-100' : 'text-slate-500 group-hover:text-slate-300'} />
                     <span className="font-medium flex-1">Leads Pipeline</span>
                 </Link>
             </nav>

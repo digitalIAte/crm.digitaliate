@@ -40,7 +40,7 @@ export async function fetchLeads(): Promise<Lead[]> {
 // Handle both { data: [...] } structure and raw [...] array structure
 export async function fetchLeadById(id: string) {
     try {
-        const res = await axios.get(`${API_URL}/30ad9040-92c3-467a-8a4a-c1a03fd9dd0b?id=${id}`, {
+        const res = await axios.get(`${API_URL}/c5ef6da7-cc54-4219-be3f-1e4ebcfc6904?id=${id}`, {
             headers: { "X-API-KEY": API_KEY },
             httpsAgent: httpsAgent
         });

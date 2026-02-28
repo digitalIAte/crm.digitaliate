@@ -55,7 +55,7 @@ export async function fetchLeadById(id: string) {
 
 export async function updateLead(id: string, updates: Partial<Lead>) {
     try {
-        const res = await axios.patch(`${API_URL}/api/crm/leads/${id}`, updates, {
+        const res = await axios.patch(`${API_URL}/ac177c2e-c6fe-4f34-a734-56da8a44993d?id=${id}`, updates, {
             headers: {
                 "X-API-KEY": API_KEY,
                 "Content-Type": "application/json"
@@ -71,7 +71,7 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
 
 export async function createActivity(payload: { lead_id: string, type: string, note?: string, source?: string }) {
     try {
-        const res = await axios.post(`${API_URL}/api/crm/activities`, payload, {
+        const res = await axios.post(`${API_URL}/7a14cb5e-9b8e-4ab5-8634-61e652485739`, payload, {
             headers: {
                 "X-API-KEY": API_KEY,
                 "Content-Type": "application/json"

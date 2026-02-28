@@ -16,6 +16,7 @@ axios.defaults.adapter = 'http';
 export interface Lead {
     id: string;
     email: string;
+    phone?: string;
     name: string;
     status: string;
     stage: string;

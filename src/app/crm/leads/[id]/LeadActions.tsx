@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateLead, createActivity, Lead } from "@/lib/api";
+import { Lead } from "@/lib/api";
+import { submitLeadUpdate, submitNewActivity, triggerWhatsApp, triggerEmail } from "./actions";
+import { Mail, MessageCircle } from "lucide-react";
 
 export default function LeadActions({ lead }: { lead: Lead }) {
     const router = useRouter();
@@ -10,10 +12,12 @@ export default function LeadActions({ lead }: { lead: Lead }) {
     const [note, setNote] = useState("");
     const [isAddingNote, setIsAddingNote] = useState(false);
 
+    const [isActioning, setIsActioning] = useState(false);
+
     const handleStatusChange = async (newStatus: string) => {
         setIsUpdating(true);
         try {
-            await updateLead(lead.id, { status: newStatus });
+            await submitLeadUpdate(lead.id, { status: newStatus });
             router.refresh(); // Tells Next.js to re-fetch Server Component data
         } catch (error) {
             alert("Failed to update status");
@@ -25,7 +29,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
     const handleStageChange = async (newStage: string) => {
         setIsUpdating(true);
         try {
-            await updateLead(lead.id, { stage: newStage });
+            await submitLeadUpdate(lead.id, { stage: newStage });
             router.refresh();
         } catch (error) {
             alert("Failed to update stage");
@@ -38,7 +42,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
         if (!note.trim()) return;
         setIsAddingNote(true);
         try {
-            await createActivity({
+            await submitNewActivity({
                 lead_id: lead.id,
                 type: "note",
                 note: note,
@@ -86,6 +90,38 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                     </select>
                 </div>
                 {isUpdating && <div className="flex items-center text-sm text-digitaliate animate-pulse mt-4">Saving...</div>}
+            </div>
+
+            {/* Quick Communicator */}
+            <div className="pt-4 border-t border-gray-100 flex items-center space-x-3">
+                <h4 className="text-sm font-semibold text-gray-500 mr-2 uppercase tracking-wide">Quick Outreach:</h4>
+                <button
+                    onClick={async () => {
+                        setIsActioning(true);
+                        const success = await triggerWhatsApp(lead.phone, "Hello! We are reaching out from Digitaliate.");
+                        alert(success ? "WhatsApp message queued successfully!" : "Failed to queue WhatsApp message.");
+                        setIsActioning(false);
+                    }}
+                    disabled={isActioning || !lead.phone}
+                    className="flex items-center space-x-2 bg-[#25D366] hover:bg-[#1DA851] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                >
+                    <MessageCircle size={16} />
+                    <span>WhatsApp</span>
+                </button>
+                <button
+                    onClick={async () => {
+                        setIsActioning(true);
+                        const success = await triggerEmail(lead.email, "Digitaliate Follow-Up", "Hello, we wanted to follow up on your recent request.");
+                        alert(success ? "Email queued successfully!" : "Failed to queue Email.");
+                        setIsActioning(false);
+                    }}
+                    disabled={isActioning || !lead.email}
+                    className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                >
+                    <Mail size={16} />
+                    <span>Email</span>
+                </button>
+                {isActioning && <span className="text-sm text-gray-400 animate-pulse ml-4">Dispatching...</span>}
             </div>
 
             {/* Note Input */}

@@ -62,7 +62,10 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
             },
             httpsAgent: httpsAgent
         });
-        return res.data;
+        if (res.status >= 200 && res.status < 300) {
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error(`Failed to update lead ${id}`, error);
         throw error;
@@ -78,7 +81,10 @@ export async function createActivity(payload: { lead_id: string, type: string, n
             },
             httpsAgent: httpsAgent
         });
-        return res.data;
+        if (res.status >= 200 && res.status < 300) {
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error(`Failed to create activity for lead ${payload.lead_id}`, error);
         throw error;

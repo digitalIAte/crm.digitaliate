@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lead } from "@/lib/api";
-import { submitLeadUpdate, submitNewActivity, triggerWhatsApp, triggerEmail } from "./actions";
-import { Mail, MessageCircle } from "lucide-react";
+import { submitLeadUpdate, submitNewActivity, triggerWhatsApp, triggerEmail, deleteLead } from "./actions";
+import { Mail, MessageCircle, Trash2 } from "lucide-react";
 
 export default function LeadActions({ lead }: { lead: Lead }) {
     const router = useRouter();
@@ -150,6 +150,22 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                     className="mt-2 bg-digitaliate text-white text-sm font-medium px-5 py-2 rounded-md hover:bg-digitaliate-dark disabled:opacity-50 transition-colors shadow-sm"
                 >
                     {isAddingNote ? "Saving Note..." : "Save Note"}
+                </button>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="mt-8 pt-4 border-t border-red-100">
+                <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-3">Danger Zone</h4>
+                <button
+                    onClick={async () => {
+                        const confirmed = window.confirm(`Are you sure you want to permanently delete the lead for ${lead.name}? This action cannot be undone.`);
+                        if (!confirmed) return;
+                        await deleteLead(lead.id, lead.email);
+                    }}
+                    className="flex items-center space-x-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm"
+                >
+                    <Trash2 size={15} />
+                    <span>Delete Lead</span>
                 </button>
             </div>
         </>

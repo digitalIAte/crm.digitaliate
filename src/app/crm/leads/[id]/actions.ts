@@ -3,8 +3,11 @@
 import { updateLead, createActivity } from "@/lib/api";
 import axios from "axios";
 import https from "https";
-
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+const API_URL = "https://n8n.javiasl.es/webhook";
+const API_KEY = "sk_dash_67890";
 
 export async function submitLeadUpdate(id: string, updates: any) {
     const success = await updateLead(id, updates);
@@ -64,4 +67,18 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
         console.error("Email trigger error", error);
         return false;
     }
+}
+
+export async function deleteLead(id: string, email: string) {
+    try {
+        const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+        await axios.delete(`${API_URL}/api/crm/gdpr/delete/${encodeURIComponent(email)}`, {
+            headers: { "X-API-KEY": API_KEY },
+            httpsAgent
+        });
+    } catch (error) {
+        console.error("Delete lead error", error);
+    }
+    revalidatePath("/crm/leads");
+    redirect("/crm/leads");
 }

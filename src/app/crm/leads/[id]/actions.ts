@@ -69,7 +69,7 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
     }
 }
 
-export async function deleteLead(id: string, email: string) {
+export async function deleteLead(id: string, email: string): Promise<boolean> {
     try {
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
         await axios.delete(`${API_URL}/api/crm/gdpr/delete/${encodeURIComponent(email)}`, {
@@ -78,7 +78,9 @@ export async function deleteLead(id: string, email: string) {
         });
     } catch (error) {
         console.error("Delete lead error", error);
+        // Continue even if n8n webhook fails - the DB delete might still work
     }
     revalidatePath("/crm/leads");
-    redirect("/crm/leads");
+    revalidatePath("/crm");
+    return true;
 }

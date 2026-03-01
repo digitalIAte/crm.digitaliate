@@ -160,7 +160,13 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                     onClick={async () => {
                         const confirmed = window.confirm(`Are you sure you want to permanently delete the lead for ${lead.name}? This action cannot be undone.`);
                         if (!confirmed) return;
-                        await deleteLead(lead.id, lead.email);
+                        const ok = await deleteLead(lead.id, lead.email);
+                        if (ok) {
+                            router.push("/crm/leads");
+                            router.refresh();
+                        } else {
+                            alert("Failed to delete lead. Please try again.");
+                        }
                     }}
                     className="flex items-center space-x-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm"
                 >

@@ -98,7 +98,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                 <button
                     onClick={async () => {
                         setIsActioning(true);
-                        const success = await triggerWhatsApp(lead.phone, "Hello! We are reaching out from Digitaliate.");
+                        const success = await triggerWhatsApp(lead, "Hello! We are reaching out from Digitaliate.");
                         alert(success ? "WhatsApp message queued successfully!" : "Failed to queue WhatsApp message.");
                         setIsActioning(false);
                     }}
@@ -111,7 +111,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                 <button
                     onClick={async () => {
                         setIsActioning(true);
-                        const success = await triggerEmail(lead.email, "Digitaliate Follow-Up", "Hello, we wanted to follow up on your recent request.");
+                        const success = await triggerEmail(lead, "Digitaliate Follow-Up", "Hello, we wanted to follow up on your recent request.");
                         alert(success ? "Email queued successfully!" : "Failed to queue Email.");
                         setIsActioning(false);
                     }}

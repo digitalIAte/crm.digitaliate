@@ -14,12 +14,18 @@ export default function LeadActions({ lead }: { lead: Lead }) {
 
     const [isActioning, setIsActioning] = useState(false);
 
+    const [currentStatus, setCurrentStatus] = useState(lead.status);
+    const [currentStage, setCurrentStage] = useState(lead.stage);
+
     const handleStatusChange = async (newStatus: string) => {
         setIsUpdating(true);
+        const prevStatus = currentStatus;
+        setCurrentStatus(newStatus); // Optimistic update
         try {
             await submitLeadUpdate(lead.id, { status: newStatus });
             router.refresh(); // Tells Next.js to re-fetch Server Component data
         } catch (error) {
+            setCurrentStatus(prevStatus); // Revert on error
             alert("Failed to update status");
         } finally {
             setIsUpdating(false);
@@ -28,10 +34,13 @@ export default function LeadActions({ lead }: { lead: Lead }) {
 
     const handleStageChange = async (newStage: string) => {
         setIsUpdating(true);
+        const prevStage = currentStage;
+        setCurrentStage(newStage); // Optimistic update
         try {
             await submitLeadUpdate(lead.id, { stage: newStage });
             router.refresh();
         } catch (error) {
+            setCurrentStage(prevStage); // Revert on error
             alert("Failed to update stage");
         } finally {
             setIsUpdating(false);
@@ -65,7 +74,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                     <label className="block text-xs font-semibold text-gray-500 uppercase">Status</label>
                     <select
                         disabled={isUpdating}
-                        value={lead.status}
+                        value={currentStatus}
                         onChange={(e) => handleStatusChange(e.target.value)}
                         className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 text-sm"
                     >
@@ -79,7 +88,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                     <label className="block text-xs font-semibold text-gray-500 uppercase">Stage</label>
                     <select
                         disabled={isUpdating}
-                        value={lead.stage}
+                        value={currentStage}
                         onChange={(e) => handleStageChange(e.target.value)}
                         className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 text-sm"
                     >

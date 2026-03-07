@@ -12,9 +12,9 @@ const config: Config = {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
                 digitaliate: {
-                    DEFAULT: "#ed273a",
-                    dark: "#8e2224",
-                    light: "#fdf7f8"
+                    DEFAULT: "#1d4ed8",
+                    dark: "#1e3a8a",
+                    light: "#eff6ff"
                 },
                 payboys: {
                     DEFAULT: "#FFC107",

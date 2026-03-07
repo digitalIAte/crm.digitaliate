@@ -74,9 +74,10 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
 export async function deleteLead(id: string, email: string): Promise<boolean> {
     try {
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-        const res = await axios.delete(
-            `https://n8n.javiasl.es/webhook/api/crm/gdpr/delete/${encodeURIComponent(id)}`,
-            { headers: { "X-API-KEY": API_KEY }, httpsAgent }
+        const res = await axios.post(
+            `https://n8n.javiasl.es/webhook/crm-delete-lead`,
+            { id },
+            { headers: { "Content-Type": "application/json" }, httpsAgent }
         );
         if (res.status < 200 || res.status >= 300) return false;
     } catch (error: any) {

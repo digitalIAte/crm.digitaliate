@@ -73,11 +73,13 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
 
 export async function deleteLead(id: string, email: string): Promise<boolean> {
     try {
+        // Call internal Next.js API route — deletes directly from Postgres
+        // Requires DATABASE_URL env var in EasyPanel
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://crm-crm.vvy9xr.easypanel.host";
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-        const res = await axios.post(
-            `https://n8n.javiasl.es/webhook/a1b2c3d4-e5f6-7890-abcd-ef1234567890`,
-            { id },
-            { headers: { "Content-Type": "application/json" }, httpsAgent }
+        const res = await axios.delete(
+            `${appUrl}/api/leads/${encodeURIComponent(id)}`,
+            { httpsAgent }
         );
         if (res.status < 200 || res.status >= 300) return false;
     } catch (error: any) {

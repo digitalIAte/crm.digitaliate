@@ -1,15 +1,18 @@
-import Link from "next/link";
-import { Users, LayoutDashboard, Settings } from "lucide-react"; // Assuming we install lucide-react
+"use client";
 
-import { Metadata } from "next";
+import Link from "next/link";
+import { Users, LayoutDashboard, Settings } from "lucide-react";
+import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 
-export const metadata: Metadata = {
-    title: "Digitaliate CRM",
-    description: "Intelligent Lead Management Dashboard",
-};
-
 export default function CRMLayout({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
+    const isLoginPage = pathname === "/crm/login";
+
+    if (isLoginPage) {
+        return <div className="min-h-screen bg-[#0a0a0a]">{children}</div>;
+    }
+
     return (
         <div className="flex h-screen bg-[#F8FAFC]">
             <Sidebar />

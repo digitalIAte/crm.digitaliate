@@ -73,13 +73,15 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
 
 export async function deleteLead(id: string, email: string): Promise<boolean> {
     try {
+        // Use internal Next.js API route which talks directly to Postgres
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-        await axios.delete(`https://n8n.javiasl.es/webhook/bfbe624e-bb1b-4b3f-bd38-e0cf65b1d9e0/api/crm/gdpr/delete/${encodeURIComponent(id)}`, {
-            headers: { "X-API-KEY": API_KEY },
+        const res = await axios.delete(`${baseUrl}/api/leads/${encodeURIComponent(id)}`, {
             httpsAgent
         });
+        if (res.status !== 200) return false;
     } catch (error: any) {
-        console.error("Delete lead error", error?.response?.data || error.message);
+        console.error("Delete lead error:", error?.response?.data || error.message);
         return false;
     }
     revalidatePath("/crm/leads");

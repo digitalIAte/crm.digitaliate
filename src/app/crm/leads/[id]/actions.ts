@@ -75,7 +75,7 @@ export async function deleteLead(id: string, email: string): Promise<boolean> {
     try {
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
         const res = await axios.post(
-            `https://n8n.javiasl.es/webhook/crm-delete-lead`,
+            `https://n8n.javiasl.es/webhook/a1b2c3d4-e5f6-7890-abcd-ef1234567890`,
             { id },
             { headers: { "Content-Type": "application/json" }, httpsAgent }
         );

@@ -12,7 +12,7 @@
       "static/chunks/fd9d1056-7298575f4412a272.js",
       "static/chunks/23-684a165eda974e76.js",
       "static/chunks/main-app-6e8885701db6dcfd.js",
-      "static/css/78c5dcc0d3a2b4da.css",
+      "static/css/14c4834ff5f64ceb.css",
       "static/chunks/app/layout-8f7d8e127a4786fe.js"
     ],
     "/page": [
@@ -35,7 +35,14 @@
       "static/chunks/23-684a165eda974e76.js",
       "static/chunks/main-app-6e8885701db6dcfd.js",
       "static/chunks/231-e343b14017b50390.js",
-      "static/chunks/app/crm/layout-1c36264bbda2175f.js"
+      "static/chunks/app/crm/layout-130eac0e95192e86.js"
+    ],
+    "/crm/analytics/page": [
+      "static/chunks/webpack-c84e7b3dbc67fa68.js",
+      "static/chunks/fd9d1056-7298575f4412a272.js",
+      "static/chunks/23-684a165eda974e76.js",
+      "static/chunks/main-app-6e8885701db6dcfd.js",
+      "static/chunks/app/crm/analytics/page-18c7df5b74e72af6.js"
     ],
     "/crm/leads/page": [
       "static/chunks/webpack-c84e7b3dbc67fa68.js",
@@ -44,6 +51,13 @@
       "static/chunks/main-app-6e8885701db6dcfd.js",
       "static/chunks/231-e343b14017b50390.js",
       "static/chunks/app/crm/leads/page-16882c84e97cd6d1.js"
+    ],
+    "/crm/templates/page": [
+      "static/chunks/webpack-c84e7b3dbc67fa68.js",
+      "static/chunks/fd9d1056-7298575f4412a272.js",
+      "static/chunks/23-684a165eda974e76.js",
+      "static/chunks/main-app-6e8885701db6dcfd.js",
+      "static/chunks/app/crm/templates/page-5c2c4b57ccb0e86a.js"
     ],
     "/crm/leads/[id]/page": [
       "static/chunks/webpack-c84e7b3dbc67fa68.js",

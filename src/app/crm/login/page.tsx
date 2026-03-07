@@ -6,7 +6,7 @@ export default function Login() {
             <img
                 src="/images/logo_digitaliate.png"
                 alt=""
-                className="absolute inset-0 w-full h-full object-contain opacity-[0.03] pointer-events-none select-none"
+                className="absolute inset-0 w-full h-full object-contain opacity-15 pointer-events-none select-none"
                 aria-hidden="true"
             />
 

@@ -6,8 +6,10 @@ import https from "https";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-const API_URL = "https://n8n.javiasl.es/webhook";
-const API_KEY = "sk_dash_67890";
+const API_URL = process.env.N8N_WEBHOOK_URL || "https://n8n.javiasl.es/webhook";
+const API_KEY = process.env.N8N_API_KEY || "sk_dash_67890";
+const WHATSAPP_WEBHOOK_ID = process.env.N8N_WHATSAPP_WEBHOOK_ID || "b949a121-d460-4c43-8bbb-12dad5eafab4";
+const EMAIL_WEBHOOK_ID = process.env.N8N_EMAIL_WEBHOOK_ID || "5e98b182-ec37-41c3-839e-7fb4a473a624";
 
 export async function submitLeadUpdate(id: string, updates: any) {
     const success = await updateLead(id, updates);
@@ -30,7 +32,7 @@ export async function triggerWhatsApp(lead: any, message: string) {
     if (!lead || !lead.phone) return false;
     try {
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-        const res = await axios.post("https://n8n.javiasl.es/webhook/b949a121-d460-4c43-8bbb-12dad5eafab4", {
+        const res = await axios.post(`${API_URL}/${WHATSAPP_WEBHOOK_ID}`, {
             phone_number: lead.phone,
             message: message,
             lead: lead // Included entire lead object for N8N context
@@ -51,7 +53,7 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
     if (!lead || !lead.email) return false;
     try {
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-        const res = await axios.post("https://n8n.javiasl.es/webhook/5e98b182-ec37-41c3-839e-7fb4a473a624", {
+        const res = await axios.post(`${API_URL}/${EMAIL_WEBHOOK_ID}`, {
             email: lead.email,
             subject: subject,
             message: copy,
@@ -72,13 +74,13 @@ export async function triggerEmail(lead: any, subject: string, copy: string) {
 export async function deleteLead(id: string, email: string): Promise<boolean> {
     try {
         const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-        await axios.delete(`${API_URL}/api/crm/gdpr/delete/${encodeURIComponent(email)}`, {
+        await axios.delete(`${API_URL}/api/crm/gdpr/delete/${encodeURIComponent(id)}`, {
             headers: { "X-API-KEY": API_KEY },
             httpsAgent
         });
-    } catch (error) {
-        console.error("Delete lead error", error);
-        // Continue even if n8n webhook fails - the DB delete might still work
+    } catch (error: any) {
+        console.error("Delete lead error", error?.response?.data || error.message);
+        return false;
     }
     revalidatePath("/crm/leads");
     revalidatePath("/crm");

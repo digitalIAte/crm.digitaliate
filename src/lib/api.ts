@@ -1,6 +1,8 @@
-// Force static values to bypass bad environment variables injecting invalid internal IPs causing SNI TLS drops
-const API_URL = "https://n8n.javiasl.es/webhook";
-const API_KEY = "sk_dash_67890";
+const API_URL = process.env.N8N_WEBHOOK_URL || "https://n8n.javiasl.es/webhook";
+const API_KEY = process.env.N8N_API_KEY || "sk_dash_67890";
+const FETCH_LEAD_BY_ID_WEBHOOK_ID = process.env.N8N_FETCH_LEAD_BY_ID_WEBHOOK_ID || "c5ef6da7-cc54-4219-be3f-1e4ebcfc6904";
+const UPDATE_LEAD_WEBHOOK_ID = process.env.N8N_UPDATE_LEAD_WEBHOOK_ID || "ac177c2e-c6fe-4f34-a734-56da8a44993d";
+const CREATE_ACTIVITY_WEBHOOK_ID = process.env.N8N_CREATE_ACTIVITY_WEBHOOK_ID || "7a14cb5e-9b8e-4ab5-8634-61e652485739";
 
 import axios from 'axios';
 import https from 'https';
@@ -41,7 +43,7 @@ export async function fetchLeads(): Promise<Lead[]> {
 // Handle both { data: [...] } structure and raw [...] array structure
 export async function fetchLeadById(id: string) {
     try {
-        const res = await axios.get(`${API_URL}/c5ef6da7-cc54-4219-be3f-1e4ebcfc6904?id=${id}`, {
+        const res = await axios.get(`${API_URL}/${FETCH_LEAD_BY_ID_WEBHOOK_ID}?id=${id}`, {
             headers: { "X-API-KEY": API_KEY },
             httpsAgent: httpsAgent
         });
@@ -56,7 +58,7 @@ export async function fetchLeadById(id: string) {
 
 export async function updateLead(id: string, updates: Partial<Lead>) {
     try {
-        const res = await axios.patch(`${API_URL}/ac177c2e-c6fe-4f34-a734-56da8a44993d?id=${id}`, updates, {
+        const res = await axios.patch(`${API_URL}/${UPDATE_LEAD_WEBHOOK_ID}?id=${id}`, updates, {
             headers: {
                 "X-API-KEY": API_KEY,
                 "Content-Type": "application/json"
@@ -75,7 +77,7 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
 
 export async function createActivity(payload: { lead_id: string, type: string, note?: string, source?: string }) {
     try {
-        const res = await axios.post(`${API_URL}/7a14cb5e-9b8e-4ab5-8634-61e652485739`, payload, {
+        const res = await axios.post(`${API_URL}/${CREATE_ACTIVITY_WEBHOOK_ID}`, payload, {
             headers: {
                 "X-API-KEY": API_KEY,
                 "Content-Type": "application/json"

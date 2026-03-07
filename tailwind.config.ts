@@ -15,6 +15,11 @@ const config: Config = {
                     DEFAULT: "#ed273a",
                     dark: "#8e2224",
                     light: "#fdf7f8"
+                },
+                payboys: {
+                    DEFAULT: "#FFC107",
+                    dark: "#CC9400",
+                    light: "#FFF9E5"
                 }
             },
         },

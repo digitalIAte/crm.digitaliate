@@ -16,9 +16,11 @@ export default function Sidebar() {
     return (
         <aside className="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-20">
             <div className="p-6 flex items-center space-x-3 border-b border-slate-800">
-                <img src="/images/logo_digitaliate.png" alt="Digitaliate" className="w-10 h-10 object-contain rounded-lg bg-white p-1" />
-                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-red-200 to-white bg-clip-text text-transparent">
-                    Digitaliate CRM
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-payboys text-black font-extrabold text-xl shadow-lg shadow-payboys/20">
+                    P
+                </div>
+                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-payboys-light to-white bg-clip-text text-transparent">
+                    PAYBOYS CRM
                 </span>
             </div>
 
@@ -27,22 +29,22 @@ export default function Sidebar() {
                 <Link
                     href="/crm"
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/crm')
-                        ? 'bg-digitaliate shadow-md shadow-red-900/20 text-white'
+                        ? 'bg-payboys shadow-md shadow-payboys/20 text-black'
                         : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                         }`}
                 >
-                    <LayoutDashboard size={20} className={isActive('/crm') ? 'text-red-100' : 'text-slate-500 group-hover:text-slate-300'} />
+                    <LayoutDashboard size={20} className={isActive('/crm') ? 'text-black/80' : 'text-slate-500 group-hover:text-slate-300'} />
                     <span className="font-medium">Dashboard</span>
                 </Link>
 
                 <Link
                     href="/crm/leads"
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 flex-1 group ${isActive('/crm/leads')
-                        ? 'bg-digitaliate shadow-md shadow-red-900/20 text-white'
+                        ? 'bg-payboys shadow-md shadow-payboys/20 text-black'
                         : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                         }`}
                 >
-                    <Users size={20} className={isActive('/crm/leads') ? 'text-red-100' : 'text-slate-500 group-hover:text-slate-300'} />
+                    <Users size={20} className={isActive('/crm/leads') ? 'text-black/80' : 'text-slate-500 group-hover:text-slate-300'} />
                     <span className="font-medium flex-1">Leads Pipeline</span>
                 </Link>
             </nav>
@@ -51,11 +53,11 @@ export default function Sidebar() {
                 <div className="bg-slate-800/50 rounded-xl p-4 mb-4">
                     <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-sm font-bold border border-slate-600">
-                            AD
+                            P
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-white">Admin Master</p>
-                            <p className="text-xs text-slate-400">admin@digitaliate.es</p>
+                            <p className="text-sm font-bold text-white">PAYBOYS Admin</p>
+                            <p className="text-xs text-slate-400">admin@payboys.es</p>
                         </div>
                     </div>
                 </div>

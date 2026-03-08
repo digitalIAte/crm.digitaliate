@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getLeadById } from "@/lib/services";
 import pool from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -15,37 +16,13 @@ export async function GET(
     }
 
     try {
-        const client = await pool.connect();
-        try {
-            // 1. Fetch Lead
-            const leadRes = await client.query("SELECT * FROM leads WHERE id = $1", [id]);
-            if (leadRes.rowCount === 0) {
-                return NextResponse.json({ error: "Lead not found" }, { status: 404 });
-            }
-            const lead = leadRes.rows[0];
-
-            // 2. Fetch Conversations
-            const convRes = await client.query(
-                "SELECT * FROM conversations WHERE lead_id = $1 ORDER BY created_at DESC",
-                [id]
-            );
-
-            // 3. Fetch Activities
-            const actRes = await client.query(
-                "SELECT * FROM activities WHERE lead_id = $1 ORDER BY created_at DESC",
-                [id]
-            );
-
-            return NextResponse.json({
-                lead,
-                conversations: convRes.rows,
-                activities: actRes.rows
-            });
-        } finally {
-            client.release();
+        const data = await getLeadById(id);
+        if (!data) {
+            return NextResponse.json({ error: "Lead not found" }, { status: 404 });
         }
+        return NextResponse.json(data);
     } catch (error: any) {
-        console.error("Fetch lead details DB error:", error.message);
+        console.error("Fetch lead details error:", error.message);
         return NextResponse.json({ error: "Failed to fetch lead details" }, { status: 500 });
     }
 }

@@ -13,8 +13,9 @@ export interface Lead {
 
 export async function fetchLeads(): Promise<Lead[]> {
     try {
-        const res = await fetch("/api/leads", { cache: "no-store" });
-        if (!res.ok) throw new Error("Failed to fetch leads");
+        const baseUrl = typeof window === 'undefined' ? (process.env.NEXT_PUBLIC_APP_URL || "") : "";
+        const res = await fetch(`${baseUrl}/api/leads`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to fetch leads: ${res.status}`);
         return await res.json();
     } catch (error) {
         console.error("Failed to fetch leads", error);
@@ -24,10 +25,7 @@ export async function fetchLeads(): Promise<Lead[]> {
 
 export async function fetchLeadById(id: string) {
     try {
-        // In Server Components, we might not have a relative URL base, so we could need 
-        // the full ORIGIN, but for client-side this works. 
-        // If this is called from 'page.tsx' (Server Component), it needs an absolute URL.
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+        const baseUrl = typeof window === 'undefined' ? (process.env.NEXT_PUBLIC_APP_URL || "") : "";
         const res = await fetch(`${baseUrl}/api/leads/${id}`, { cache: "no-store" });
         if (!res.ok) return null;
         return await res.json();
@@ -39,7 +37,8 @@ export async function fetchLeadById(id: string) {
 
 export async function updateLead(id: string, updates: Partial<Lead>) {
     try {
-        const res = await fetch(`/api/leads/${id}`, {
+        const baseUrl = typeof window === 'undefined' ? (process.env.NEXT_PUBLIC_APP_URL || "") : "";
+        const res = await fetch(`${baseUrl}/api/leads/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updates),
@@ -53,7 +52,8 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
 
 export async function createActivity(payload: { lead_id: string, type: string, note?: string, source?: string }) {
     try {
-        const res = await fetch(`/api/activities`, {
+        const baseUrl = typeof window === 'undefined' ? (process.env.NEXT_PUBLIC_APP_URL || "") : "";
+        const res = await fetch(`${baseUrl}/api/activities`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),

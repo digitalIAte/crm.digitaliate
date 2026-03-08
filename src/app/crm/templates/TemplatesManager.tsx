@@ -63,14 +63,14 @@ export default function TemplatesManager() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center bg-gradient-to-r from-payboys to-blue-600 rounded-xl p-8 shadow-sm">
+            <div className="flex justify-between items-center bg-gradient-to-r from-digitaliate to-digitaliate-dark rounded-xl p-8 shadow-sm">
                 <div>
                     <h2 className="text-3xl font-bold text-white mb-2">Plantillas de Mensajes</h2>
                     <p className="text-blue-100">Crea y gestiona respuestas rápidas para usar en WhatsApp y Email con tus leads.</p>
                 </div>
                 <button
                     onClick={() => setIsFormOpen(!isFormOpen)}
-                    className="bg-white text-payboys px-5 py-2.5 rounded-lg font-bold shadow-sm hover:bg-gray-50 transition"
+                    className="bg-white text-digitaliate px-5 py-2.5 rounded-lg font-bold shadow-sm hover:bg-gray-50 transition"
                 >
                     + Nueva Plantilla
                 </button>
@@ -109,7 +109,7 @@ export default function TemplatesManager() {
 
                         <div className="flex justify-end gap-3 pt-2">
                             <button type="button" onClick={() => setIsFormOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition">Cancelar</button>
-                            <button type="submit" disabled={isPending} className="px-4 py-2 text-sm bg-payboys text-white rounded-lg font-bold shadow-sm hover:bg-blue-600 transition disabled:opacity-50">Guardar plantilla</button>
+                            <button type="submit" disabled={isPending} className="px-4 py-2 text-sm bg-digitaliate text-white rounded-lg font-bold shadow-sm hover:bg-digitaliate-dark transition disabled:opacity-50">Guardar plantilla</button>
                         </div>
                     </form>
                 </div>

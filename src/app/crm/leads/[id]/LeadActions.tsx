@@ -107,7 +107,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                 <button
                     onClick={async () => {
                         setIsActioning(true);
-                        const success = await triggerWhatsApp(lead, "¡Hola! Te contactamos de PAYBOYS.");
+                        const success = await triggerWhatsApp(lead, "¡Hola! Te contactamos de DigitalIAte.");
                         alert(success ? "WhatsApp message queued successfully!" : "Failed to queue WhatsApp message.");
                         setIsActioning(false);
                     }}
@@ -120,7 +120,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                 <button
                     onClick={async () => {
                         setIsActioning(true);
-                        const success = await triggerEmail(lead, "Seguimiento de PAYBOYS", "Hola, queríamos hacer un seguimiento de tu solicitud reciente.");
+                        const success = await triggerEmail(lead, "Seguimiento de DigitalIAte", "Hola, queríamos hacer un seguimiento de tu solicitud reciente.");
                         alert(success ? "Email queued successfully!" : "Failed to queue Email.");
                         setIsActioning(false);
                     }}
@@ -147,7 +147,7 @@ export default function LeadActions({ lead }: { lead: Lead }) {
                 <button
                     onClick={handleAddNote}
                     disabled={isAddingNote || !note.trim()}
-                    className="mt-2 bg-payboys text-black text-sm font-bold px-5 py-2 rounded-md hover:bg-payboys-dark disabled:opacity-50 transition-colors shadow-sm"
+                    className="mt-2 bg-digitaliate text-white text-sm font-bold px-5 py-2 rounded-md hover:bg-digitaliate-dark disabled:opacity-50 transition-colors shadow-sm"
                 >
                     {isAddingNote ? "Saving Note..." : "Save Note"}
                 </button>

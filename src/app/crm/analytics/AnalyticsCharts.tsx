@@ -73,7 +73,7 @@ export default function AnalyticsCharts() {
                                 <div className="flex items-center gap-3">
                                     <span className="text-sm font-bold text-gray-900">{s.count}</span>
                                     <div className="w-24 bg-gray-100 rounded-full h-2">
-                                        <div className="bg-payboys h-2 rounded-full" style={{ width: `${Math.min(100, parseInt(s.count) * 10)}%` }}></div>
+                                        <div className="bg-digitaliate h-2 rounded-full" style={{ width: `${Math.min(100, parseInt(s.count) * 10)}%` }}></div>
                                     </div>
                                 </div>
                             </div>

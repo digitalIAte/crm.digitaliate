@@ -1,23 +1,14 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { getLeads } from "@/lib/services";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {
-        const client = await pool.connect();
-        try {
-            const result = await client.query(`
-                SELECT * FROM leads 
-                ORDER BY created_at DESC 
-                LIMIT 1000
-            `);
-            return NextResponse.json(result.rows);
-        } finally {
-            client.release();
-        }
+        const leads = await getLeads();
+        return NextResponse.json(leads);
     } catch (error: any) {
-        console.error("Fetch leads DB error:", error.message);
+        console.error("Fetch leads error:", error.message);
         return NextResponse.json({ error: "Failed to fetch leads" }, { status: 500 });
     }
 }

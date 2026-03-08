@@ -1,4 +1,4 @@
-import { fetchLeadById } from "@/lib/api";
+import { getLeadById } from "@/lib/services";
 import Link from "next/link";
 import LeadActions from "./LeadActions";
 import TagsEditor from "./TagsEditor";
@@ -8,7 +8,7 @@ import DuplicateDetector from "./DuplicateDetector";
 export const dynamic = "force-dynamic";
 
 export default async function LeadDetailPage({ params }: { params: { id: string } }) {
-    const rawData = await fetchLeadById(params.id);
+    const rawData = await getLeadById(params.id);
 
     if (!rawData || !rawData.lead) {
         return (
@@ -35,7 +35,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
                     <h2 className="text-3xl font-bold text-gray-900 mb-1">{lead.name || "Unknown"}</h2>
                     <p className="text-gray-500">{lead.email} {lead.phone ? `| ${lead.phone}` : ""}</p>
                     <div className="mt-5 flex items-center space-x-3">
-                        <span className="bg-gradient-to-r from-payboys-light to-payboys text-black font-bold text-xs px-3 py-1 rounded-full border border-payboys/20 shadow-sm">
+                        <span className="bg-gradient-to-r from-digitaliate-light to-digitaliate text-white font-bold text-xs px-3 py-1 rounded-full border border-digitaliate/20 shadow-sm">
                             Score: {lead.score}
                         </span>
                         <span className="bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full border border-slate-200">

@@ -56,7 +56,7 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm z-10">
+        <aside className="w-64 bg-red-500 border-r border-gray-100 flex flex-col shadow-sm z-10 text-white">
             <div className="h-16 flex items-center px-6 border-b border-gray-50">
                 <Link href="/crm" className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-digitaliate to-digitaliate-dark">
                     DIGITALIATE CRM

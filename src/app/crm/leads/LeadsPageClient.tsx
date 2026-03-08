@@ -7,6 +7,7 @@ import KanbanBoard from "./KanbanBoard";
 import { bulkDeleteLeads, bulkUpdateStatus } from "./bulk-actions";
 
 export default function LeadsPageClient({ initialLeads }: { initialLeads: Lead[] }) {
+    console.log("LeadsPageClient received leads:", initialLeads?.length || 0);
     const [view, setView] = useState<"table" | "kanban">("table");
 
     return (

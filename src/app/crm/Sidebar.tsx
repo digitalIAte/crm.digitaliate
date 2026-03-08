@@ -32,9 +32,6 @@ export default function Sidebar() {
                 const data = await res.json();
 
                 if (data && data.leadsByDay && data.leadsByDay.length > 0) {
-                    // Very simple heuristic: if there are new leads today, and we haven't visited leads today, show a badge.
-                    // For a true implementation, we'd need an endpoint like /api/leads/count?since=timestamp
-                    // We'll approximate by checking the most recent day's count
                     const todayDate = new Date().toISOString().split('T')[0];
                     const todayData = data.leadsByDay.find((d: any) => new Date(d.date).toISOString().split('T')[0] === todayDate);
 
@@ -62,7 +59,7 @@ export default function Sidebar() {
         <aside className="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm z-10">
             <div className="h-16 flex items-center px-6 border-b border-gray-50">
                 <Link href="/crm" className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-digitaliate to-digitaliate-dark">
-                    DIGITAL<span className="opacity-80">IATE</span> CRM
+                    DIGITALIATE CRM
                 </Link>
             </div>
 

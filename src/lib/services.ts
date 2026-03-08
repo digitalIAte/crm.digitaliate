@@ -66,6 +66,31 @@ export async function getKanbanColumns(): Promise<KanbanColumn[]> {
             SELECT * FROM kanban_columns ORDER BY position ASC
         `);
         return result.rows;
+    } catch (e: any) {
+        // Auto-migrate if table does not exist
+        if (e.code === '42P01' || e.message.includes('kanban_columns')) {
+            console.log("kanban_columns table missing. Auto-creating...");
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS kanban_columns (
+                    id VARCHAR(50) PRIMARY KEY,
+                    title VARCHAR(100) NOT NULL,
+                    color VARCHAR(100) DEFAULT 'border-gray-200 bg-gray-50/50',
+                    position INT DEFAULT 0
+                );
+                
+                INSERT INTO kanban_columns (id, title, color, position) VALUES
+                ('new', 'Nuevos', 'border-blue-200 bg-blue-50/50', 0),
+                ('contacted', 'Contactados', 'border-yellow-200 bg-yellow-50/50', 1),
+                ('qualified', 'Cualificados', 'border-emerald-200 bg-emerald-50/50', 2),
+                ('lost', 'Perdidos', 'border-red-200 bg-red-50/50', 3)
+                ON CONFLICT (id) DO NOTHING;
+            `);
+            const retryResult = await client.query(`
+                SELECT * FROM kanban_columns ORDER BY position ASC
+            `);
+            return retryResult.rows;
+        }
+        throw e;
     } finally {
         client.release();
     }

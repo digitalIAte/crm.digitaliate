@@ -1,20 +1,3 @@
-const API_URL = process.env.N8N_WEBHOOK_URL || "https://n8n.javiasl.es/webhook";
-const API_KEY = process.env.N8N_API_KEY || "sk_dash_67890";
-const FETCH_LEAD_BY_ID_WEBHOOK_ID = process.env.N8N_FETCH_LEAD_BY_ID_WEBHOOK_ID || "c5ef6da7-cc54-4219-be3f-1e4ebcfc6904";
-const UPDATE_LEAD_WEBHOOK_ID = process.env.N8N_UPDATE_LEAD_WEBHOOK_ID || "ac177c2e-c6fe-4f34-a734-56da8a44993d";
-const CREATE_ACTIVITY_WEBHOOK_ID = process.env.N8N_CREATE_ACTIVITY_WEBHOOK_ID || "7a14cb5e-9b8e-4ab5-8634-61e652485739";
-
-import axios from 'axios';
-import https from 'https';
-
-// Because n8n is served behind a specific proxy/SNI that Node.js native fetch rejects,
-// we create a custom HTTPS agent that ignores unauthorized SSL certs strictly for these internal Next.js Server API calls.
-const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-});
-
-axios.defaults.adapter = 'http';
-
 export interface Lead {
     id: string;
     email: string;
@@ -25,31 +8,29 @@ export interface Lead {
     score: number;
     owner_email: string;
     created_at: string;
+    tags?: string[];
 }
 
 export async function fetchLeads(): Promise<Lead[]> {
     try {
-        const res = await axios.get(`${API_URL}/api/crm/leads`, {
-            headers: { "X-API-KEY": API_KEY },
-            httpsAgent: httpsAgent
-        });
-        const data = res.data;
-        return Array.isArray(data) ? data : (data.data || []);
+        const res = await fetch("/api/leads", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to fetch leads");
+        return await res.json();
     } catch (error) {
         console.error("Failed to fetch leads", error);
         return [];
     }
 }
-// Handle both { data: [...] } structure and raw [...] array structure
+
 export async function fetchLeadById(id: string) {
     try {
-        const res = await axios.get(`${API_URL}/${FETCH_LEAD_BY_ID_WEBHOOK_ID}?id=${id}`, {
-            headers: { "X-API-KEY": API_KEY },
-            httpsAgent: httpsAgent
-        });
-        const data = res.data;
-        if (!data || !data.lead) return null;
-        return data;
+        // In Server Components, we might not have a relative URL base, so we could need 
+        // the full ORIGIN, but for client-side this works. 
+        // If this is called from 'page.tsx' (Server Component), it needs an absolute URL.
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+        const res = await fetch(`${baseUrl}/api/leads/${id}`, { cache: "no-store" });
+        if (!res.ok) return null;
+        return await res.json();
     } catch (error) {
         console.error(`Failed to fetch lead ${id}`, error);
         return null;
@@ -58,17 +39,12 @@ export async function fetchLeadById(id: string) {
 
 export async function updateLead(id: string, updates: Partial<Lead>) {
     try {
-        const res = await axios.patch(`${API_URL}/${UPDATE_LEAD_WEBHOOK_ID}?id=${id}`, updates, {
-            headers: {
-                "X-API-KEY": API_KEY,
-                "Content-Type": "application/json"
-            },
-            httpsAgent: httpsAgent
+        const res = await fetch(`/api/leads/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updates),
         });
-        if (res.status >= 200 && res.status < 300) {
-            return true;
-        }
-        return false;
+        return res.ok;
     } catch (error) {
         console.error(`Failed to update lead ${id}`, error);
         throw error;
@@ -77,19 +53,15 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
 
 export async function createActivity(payload: { lead_id: string, type: string, note?: string, source?: string }) {
     try {
-        const res = await axios.post(`${API_URL}/${CREATE_ACTIVITY_WEBHOOK_ID}`, payload, {
-            headers: {
-                "X-API-KEY": API_KEY,
-                "Content-Type": "application/json"
-            },
-            httpsAgent: httpsAgent
+        const res = await fetch(`/api/activities`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
         });
-        if (res.status >= 200 && res.status < 300) {
-            return true;
-        }
-        return false;
+        return res.ok;
     } catch (error) {
         console.error(`Failed to create activity for lead ${payload.lead_id}`, error);
         throw error;
     }
 }
+

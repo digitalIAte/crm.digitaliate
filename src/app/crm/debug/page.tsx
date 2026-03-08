@@ -4,9 +4,9 @@ import pool from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export default async function DebugPage() {
-    let leads = [];
-    let error = null;
-    let poolStats = {};
+    let leads: any[] = [];
+    let error: string | null = null;
+    let poolStats: any = {};
     let envCheck = {
         hasDbUrl: !!process.env.DATABASE_URL,
         dbUrlStart: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + "..." : "missing",

@@ -1,18 +1,21 @@
-import { getLeads } from "@/lib/services";
+import { getLeads, getKanbanColumns } from "@/lib/services";
 import LeadsPageClient from "./LeadsPageClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function LeadsPage() {
     try {
-        const leads = await getLeads();
-        console.log(`LeadsPage fetched ${leads?.length || 0} leads`);
+        const [leads, columns] = await Promise.all([
+            getLeads(),
+            getKanbanColumns()
+        ]);
+        console.log(`LeadsPage fetched ${leads?.length || 0} leads and ${columns?.length || 0} columns`);
         return (
             <>
                 <div id="debug-server-leads" style={{ display: 'none' }}>
                     {JSON.stringify({ count: leads?.length || 0, timestamp: new Date().toISOString() })}
                 </div>
-                <LeadsPageClient initialLeads={leads || []} />
+                <LeadsPageClient initialLeads={leads || []} columns={columns || []} />
             </>
         );
     } catch (error: any) {

@@ -4,7 +4,8 @@ import { useState, useMemo, useTransition } from "react";
 import Link from "next/link";
 import { Lead } from "@/lib/api";
 
-const STATUS_OPTIONS = ["", "new", "contacted", "qualified", "lost"];
+import { KanbanColumn } from "@/lib/services";
+
 const STAGE_OPTIONS = ["", "Inbound", "Outbound", "Nurturing", "Closed"];
 
 const STATUS_STYLES: Record<string, string> = {
@@ -27,16 +28,18 @@ function exportToCSV(leads: Lead[]) {
     URL.revokeObjectURL(url);
 }
 
-interface Props { leads: Lead[]; onBulkDelete?: (ids: string[]) => void; onBulkStatus?: (ids: string[], status: string) => void; }
+interface Props { leads: Lead[]; columns: KanbanColumn[]; onBulkDelete?: (ids: string[]) => void; onBulkStatus?: (ids: string[], status: string) => void; }
 
-export default function LeadsClient({ leads, onBulkDelete, onBulkStatus }: Props) {
+export default function LeadsClient({ leads, columns, onBulkDelete, onBulkStatus }: Props) {
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [stageFilter, setStageFilter] = useState("");
     const [minScore, setMinScore] = useState(0);
     const [selected, setSelected] = useState<Set<string>>(new Set());
-    const [bulkStatus, setBulkStatus] = useState("contacted");
+    const [bulkStatus, setBulkStatus] = useState(columns?.[0]?.id || "");
     const [isPending, startTransition] = useTransition();
+
+    const STATUS_OPTIONS = ["", ...columns.map(c => c.id)];
 
     const filtered = useMemo(() => leads.filter(l => {
         const q = search.toLowerCase();
@@ -76,7 +79,7 @@ export default function LeadsClient({ leads, onBulkDelete, onBulkStatus }: Props
                 <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
                     className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-digitaliate/30">
                     <option value="">Todos los estados</option>
-                    {STATUS_OPTIONS.filter(Boolean).map(s => <option key={s} value={s}>{s}</option>)}
+                    {columns.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
                 </select>
                 <select value={stageFilter} onChange={e => setStageFilter(e.target.value)}
                     className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-digitaliate/30">
@@ -102,7 +105,7 @@ export default function LeadsClient({ leads, onBulkDelete, onBulkStatus }: Props
                     <div className="flex items-center gap-2 ml-auto">
                         <select value={bulkStatus} onChange={e => setBulkStatus(e.target.value)}
                             className="border border-digitaliate/30 rounded-lg px-2 py-1.5 text-sm bg-white">
-                            {STATUS_OPTIONS.filter(Boolean).map(s => <option key={s} value={s}>{s}</option>)}
+                            {columns.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
                         </select>
                         <button onClick={() => { startTransition(() => onBulkStatus?.(selectedArr, bulkStatus)); setSelected(new Set()); }}
                             className="bg-digitaliate text-white px-3 py-1.5 rounded-lg hover:bg-digitaliate-dark transition">

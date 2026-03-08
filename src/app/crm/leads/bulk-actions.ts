@@ -48,3 +48,23 @@ export async function bulkDeleteLeads(ids: string[]): Promise<boolean> {
         return false;
     }
 }
+
+import { addKanbanColumn as addCol, updateKanbanColumn as updateCol } from "@/lib/services";
+
+export async function addKanbanColumnAction(title: string, color: string): Promise<boolean> {
+    const success = await addCol(title, color);
+    if (success) {
+        revalidatePath("/crm/leads");
+        revalidatePath("/crm");
+    }
+    return success;
+}
+
+export async function updateKanbanColumnAction(id: string, title: string): Promise<boolean> {
+    const success = await updateCol(id, title);
+    if (success) {
+        revalidatePath("/crm/leads");
+        revalidatePath("/crm");
+    }
+    return success;
+}

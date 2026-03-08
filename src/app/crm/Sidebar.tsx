@@ -61,6 +61,7 @@ export default function Sidebar() {
                 <Link href="/crm" className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-digitaliate to-digitaliate-dark">
                     DIGITALIATE CRM
                 </Link>
+                <span className="ml-2 text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded">DIRECT-DB-V2</span>
             </div>
 
             <nav className="flex-1 px-4 py-6 space-y-1">

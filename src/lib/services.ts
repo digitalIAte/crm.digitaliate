@@ -34,11 +34,11 @@ export async function getLeadById(id: string) {
         if (leadRes.rows.length === 0) return null;
 
         const convsRes = await client.query(
-            "SELECT * FROM conversations WHERE lead_id = $1 ORDER BY timestamp DESC LIMIT 50",
+            "SELECT * FROM conversations WHERE lead_id = $1 ORDER BY created_at DESC LIMIT 50",
             [id]
         );
         const actsRes = await client.query(
-            "SELECT * FROM activities WHERE lead_id = $1 ORDER BY timestamp DESC LIMIT 50",
+            "SELECT * FROM activities WHERE lead_id = $1 ORDER BY created_at DESC LIMIT 50",
             [id]
         );
 

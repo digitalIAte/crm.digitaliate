@@ -129,6 +129,24 @@ export default function SettingsClient({ settings, userEmail }: SettingsClientPr
                                     </div>
                                     <p className="mt-2 text-xs text-gray-400 italic">URL utilizada para notificar eventos externos.</p>
                                 </div>
+                                <hr className="border-gray-50 my-6" />
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                        Integración de Calendly
+                                    </h3>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Enlace de Calendly</label>
+                                    <div className="relative">
+                                        <input 
+                                            name="calendlyUrl"
+                                            type="url" 
+                                            defaultValue={settings.calendly_url}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-digitaliate focus:border-transparent outline-none transition-all pl-11 font-medium"
+                                            placeholder="https://calendly.com/su-usuario"
+                                        />
+                                        <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+                                    </div>
+                                    <p className="mt-2 text-xs text-gray-400 italic">Este enlace se usará para agendar reuniones desde las fichas de los leads.</p>
+                                </div>
                                 <input type="hidden" name="primaryColor" defaultValue={settings.primary_color} />
                             </div>
                         </div>

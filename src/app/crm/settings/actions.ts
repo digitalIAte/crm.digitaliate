@@ -8,8 +8,9 @@ export async function saveSettingsAction(formData: FormData) {
     const agencyName = formData.get("agencyName") as string;
     const webhookUrl = formData.get("webhookUrl") as string;
     const primaryColor = formData.get("primaryColor") as string;
+    const calendlyUrl = formData.get("calendlyUrl") as string;
 
-    const success = await updateWorkspaceSettings(agencyName, webhookUrl, primaryColor);
+    const success = await updateWorkspaceSettings(agencyName, webhookUrl, primaryColor, calendlyUrl);
     if (success) {
         revalidatePath("/crm/settings");
         revalidatePath("/crm"); // Revalidate sidebar if we use agency name there

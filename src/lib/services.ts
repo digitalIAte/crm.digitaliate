@@ -63,18 +63,40 @@ export async function ensureDatabaseReady() {
         }
 
         // 4. Workspace Settings Table
+        // Note: Adding a new column calendly_url if it doesn't exist. Easiest way in Postgres without breaking is to try adding it.
+        try {
+            await client.query("ALTER TABLE workspace_settings ADD COLUMN calendly_url TEXT DEFAULT 'https://calendly.com/contacto-digitaliate/30min';");
+        } catch (e: any) {
+            // Column might already exist, ignore error 42701 (duplicate_column)
+        }
+
         await client.query(`
             CREATE TABLE IF NOT EXISTS workspace_settings (
                 id SERIAL PRIMARY KEY,
                 agency_name VARCHAR(255) DEFAULT 'Digitaliate CRM',
                 primary_color VARCHAR(50) DEFAULT '#2563EB',
                 n8n_webhook_url TEXT,
+                calendly_url TEXT DEFAULT 'https://calendly.com/contacto-digitaliate/30min',
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
-            INSERT INTO workspace_settings (id, agency_name) 
-            VALUES (1, 'Digitaliate CRM')
+            INSERT INTO workspace_settings (id, agency_name, calendly_url) 
+            VALUES (1, 'Digitaliate CRM', 'https://calendly.com/contacto-digitaliate/30min')
             ON CONFLICT (id) DO NOTHING;
+        `);
+
+        // 5. Appointments Table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS appointments (
+                id SERIAL PRIMARY KEY,
+                lead_id UUID REFERENCES leads(id) ON DELETE CASCADE,
+                title VARCHAR(255),
+                start_time TIMESTAMP NOT NULL,
+                end_time TIMESTAMP NOT NULL,
+                status VARCHAR(50) DEFAULT 'scheduled',
+                meeting_url TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         `);
 
         console.log("Database schema is ready.");
@@ -200,12 +222,12 @@ export async function getWorkspaceSettings() {
     }
 }
 
-export async function updateWorkspaceSettings(agency_name: string, n8n_webhook_url: string, primary_color: string) {
+export async function updateWorkspaceSettings(agency_name: string, n8n_webhook_url: string, primary_color: string, calendly_url: string) {
     const client = await pool.connect();
     try {
         await client.query(
-            "UPDATE workspace_settings SET agency_name = $1, n8n_webhook_url = $2, primary_color = $3 WHERE id = 1",
-            [agency_name, n8n_webhook_url, primary_color]
+            "UPDATE workspace_settings SET agency_name = $1, n8n_webhook_url = $2, primary_color = $3, calendly_url = $4 WHERE id = 1",
+            [agency_name, n8n_webhook_url, primary_color, calendly_url]
         );
         return true;
     } catch (e) {

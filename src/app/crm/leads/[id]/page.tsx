@@ -1,16 +1,18 @@
-import { getLeadById, getKanbanColumns } from "@/lib/services";
+import { getLeadById, getKanbanColumns, getWorkspaceSettings } from "@/lib/services";
 import Link from "next/link";
 import LeadActions from "./LeadActions";
 import TagsEditor from "./TagsEditor";
 import RemindersPanel from "./RemindersPanel";
 import DuplicateDetector from "./DuplicateDetector";
+import AppointmentsPanel from "./AppointmentsPanel";
 
 export const dynamic = "force-dynamic";
 
 export default async function LeadDetailPage({ params }: { params: { id: string } }) {
-    const [rawData, columns] = await Promise.all([
+    const [rawData, columns, settings] = await Promise.all([
         getLeadById(params.id),
-        getKanbanColumns()
+        getKanbanColumns(),
+        getWorkspaceSettings()
     ]);
 
     if (!rawData || !rawData.lead) {
@@ -99,6 +101,11 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
                         </div>
                     </div>
 
+                    <AppointmentsPanel 
+                        leadId={lead.id} 
+                        leadName={lead.name} 
+                        calendlyUrl={settings?.calendly_url || 'https://calendly.com/'} 
+                    />
                     <RemindersPanel leadId={lead.id} />
                 </div>
             </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, LayoutDashboard, Settings, BarChart3, MessageSquareText, LogOut, User } from "lucide-react";
+import { Users, LayoutDashboard, Settings, BarChart3, MessageSquareText, LogOut, User, Calendar as CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 
@@ -60,8 +60,9 @@ export default function Sidebar() {
 
     const navigation = [
         { name: "Dashboard", href: "/crm", icon: LayoutDashboard },
-        { name: "Analytics", href: "/crm/analytics", icon: BarChart3 },
+        { name: "Calendario", href: "/crm/calendar", icon: CalendarIcon },
         { name: "Leads Pipeline", href: "/crm/leads", icon: Users, badge: newLeadsCount },
+        { name: "Analytics", href: "/crm/analytics", icon: BarChart3 },
         { name: "Plantillas", href: "/crm/templates", icon: MessageSquareText },
         { name: "Settings", href: "/crm/settings", icon: Settings },
     ];

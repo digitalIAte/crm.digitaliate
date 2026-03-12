@@ -27,5 +27,6 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
                 </div>
             </main>
         </div>
+        </AuthProvider>
     );
 }

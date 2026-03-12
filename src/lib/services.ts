@@ -1,4 +1,5 @@
 import pool from "./db";
+import bcrypt from "bcryptjs";
 
 export interface Lead {
     id: string;
@@ -11,6 +12,78 @@ export interface Lead {
     owner_email: string;
     created_at: string;
     tags?: string[];
+}
+
+/**
+ * Ensures all necessary tables and default data exist in the database.
+ * This is called before critical operations to prevent "relation does not exist" errors in production.
+ */
+export async function ensureDatabaseReady() {
+    const client = await pool.connect();
+    try {
+        console.log("Checking database schema integrity...");
+        
+        // 1. Kanban Columns Table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS kanban_columns (
+                id VARCHAR(50) PRIMARY KEY,
+                title VARCHAR(100) NOT NULL,
+                color VARCHAR(100) DEFAULT 'border-gray-200 bg-gray-50/50',
+                position INT DEFAULT 0
+            );
+            
+            INSERT INTO kanban_columns (id, title, color, position) VALUES
+            ('new', 'Nuevos', 'border-blue-200 bg-blue-50/50', 0),
+            ('contacted', 'Contactados', 'border-yellow-200 bg-yellow-50/50', 1),
+            ('qualified', 'Cualificados', 'border-emerald-200 bg-emerald-50/50', 2),
+            ('lost', 'Perdidos', 'border-red-200 bg-red-50/50', 3)
+            ON CONFLICT (id) DO NOTHING;
+        `);
+
+        // 2. Users Table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                email VARCHAR(100) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        // 3. Admin User Check
+        const adminCheck = await client.query("SELECT * FROM users WHERE email = $1", ["admin@digitaliate.com"]);
+        if (adminCheck.rows.length === 0) {
+            console.log("Provisioning default admin user...");
+            const hashed = await bcrypt.hash("admin123", 10);
+            await client.query(
+                "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
+                ["Admin", "admin@digitaliate.com", hashed]
+            );
+        }
+
+        // 4. Workspace Settings Table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS workspace_settings (
+                id SERIAL PRIMARY KEY,
+                agency_name VARCHAR(255) DEFAULT 'Digitaliate CRM',
+                primary_color VARCHAR(50) DEFAULT '#2563EB',
+                n8n_webhook_url TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            INSERT INTO workspace_settings (id, agency_name) 
+            VALUES (1, 'Digitaliate CRM')
+            ON CONFLICT (id) DO NOTHING;
+        `);
+
+        console.log("Database schema is ready.");
+    } catch (e: any) {
+        console.error("Database initialization failed:", e.message);
+        throw e;
+    } finally {
+        client.release();
+    }
 }
 
 export async function getLeads(): Promise<Lead[]> {
@@ -62,70 +135,22 @@ export interface KanbanColumn {
 export async function getKanbanColumns(): Promise<KanbanColumn[]> {
     const client = await pool.connect();
     try {
-        const result = await client.query(`
-            SELECT * FROM kanban_columns ORDER BY position ASC
-        `);
-        return result.rows;
-    } catch (e: any) {
-        // Auto-migrate if table does not exist
-        if (e.code === '42P01' || e.message.includes('kanban_columns')) {
-            console.log("kanban_columns table missing. Auto-creating...");
-            await client.query(`
-                CREATE TABLE IF NOT EXISTS kanban_columns (
-                    id VARCHAR(50) PRIMARY KEY,
-                    title VARCHAR(100) NOT NULL,
-                    color VARCHAR(100) DEFAULT 'border-gray-200 bg-gray-50/50',
-                    position INT DEFAULT 0
-                );
-                
-                INSERT INTO kanban_columns (id, title, color, position) VALUES
-                ('new', 'Nuevos', 'border-blue-200 bg-blue-50/50', 0),
-                ('contacted', 'Contactados', 'border-yellow-200 bg-yellow-50/50', 1),
-                ('qualified', 'Cualificados', 'border-emerald-200 bg-emerald-50/50', 2),
-                ('lost', 'Perdidos', 'border-red-200 bg-red-50/50', 3)
-                ON CONFLICT (id) DO NOTHING;
-
-                CREATE TABLE IF NOT EXISTS users (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(100),
-                    email VARCHAR(100) UNIQUE NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            `);
-            
-            // Check if admin exists, if not create default
-            const adminCheck = await client.query("SELECT * FROM users WHERE email = $1", ["admin@digitaliate.com"]);
-            if (adminCheck.rows.length === 0) {
-                // We'll use a pre-hashed password for "admin123" to avoid needing bcrypt in this service function
-                // Hash of "admin123" with 10 rounds: $2a$10$X8O.UaG7KxR2cEqv2S2zxe6G.j8P4H3/X/3i4p3O.e9Z0C1m2S1O. (dummy)
-                // Actually, I'll just use a simple placeholder if I can't hash here, 
-                // but wait, I can import bcryptjs here.
-                const bcrypt = require("bcryptjs");
-                const hashed = await bcrypt.hash("admin123", 10);
-                await client.query(
-                    "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
-                    ["Admin", "admin@digitaliate.com", hashed]
-                );
-            }
-
-            const retryResult = await client.query(`
+        // Try the query first, if it fails, try to init and retry once
+        try {
+            const result = await client.query(`
                 SELECT * FROM kanban_columns ORDER BY position ASC
-                CREATE TABLE IF NOT EXISTS workspace_settings (
-                    id SERIAL PRIMARY KEY,
-                    agency_name VARCHAR(255) DEFAULT 'Digitaliate CRM',
-                    primary_color VARCHAR(50) DEFAULT '#2563EB',
-                    n8n_webhook_url TEXT,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                INSERT INTO workspace_settings (id, agency_name) 
-                VALUES (1, 'Digitaliate CRM')
-                ON CONFLICT (id) DO NOTHING;
             `);
-            return retryResult.rows;
+            return result.rows;
+        } catch (e: any) {
+            if (e.code === '42P01' || e.message.includes('kanban_columns')) {
+                await ensureDatabaseReady();
+                const result = await client.query(`
+                    SELECT * FROM kanban_columns ORDER BY position ASC
+                `);
+                return result.rows;
+            }
+            throw e;
         }
-        throw e;
     } finally {
         client.release();
     }

@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import pool from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { ensureDatabaseReady } from "@/lib/services";
 
 const handler = NextAuth({
     providers: [
@@ -15,6 +16,9 @@ const handler = NextAuth({
                 if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
+
+                // Ensure tables exist before querying
+                await ensureDatabaseReady();
 
                 const client = await pool.connect();
                 try {

@@ -122,3 +122,30 @@ export async function deleteLead(id: string, email: string): Promise<boolean> {
         return false;
     }
 }
+
+export async function submitNewAppointment(payload: { lead_id: string, title: string, start_time: string, end_time: string, meeting_url?: string }) {
+    try {
+        const client = await pool.connect();
+        try {
+            await client.query(
+                `INSERT INTO appointments (lead_id, title, start_time, end_time, meeting_url) 
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [payload.lead_id, payload.title, new Date(payload.start_time), new Date(payload.end_time), payload.meeting_url || null]
+            );
+
+            // Trigger activity log
+            await client.query(
+                `INSERT INTO activities (lead_id, type, note, source) VALUES ($1, $2, $3, $4)`,
+                [payload.lead_id, "meeting", `Nueva cita agendada manualmente: ${payload.title}`, "CRM User"]
+            );
+        } finally {
+            client.release();
+        }
+        revalidatePath(`/crm/leads/${payload.lead_id}`);
+        revalidatePath(`/crm/calendar`);
+        return true;
+    } catch (e: any) {
+        console.error("Direct create appointment error:", e.message);
+        return false;
+    }
+}

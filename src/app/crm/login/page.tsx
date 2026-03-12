@@ -1,4 +1,36 @@
+"use client";
+
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 export default function Login() {
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
+
+        const result = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+        });
+
+        if (result?.error) {
+            setError("Credenciales inválidas. Por favor, intenta de nuevo.");
+            setLoading(false);
+        } else {
+            router.push("/crm/leads");
+            router.refresh();
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 text-gray-900 font-sans selection:bg-digitaliate selection:text-white relative overflow-hidden">
 
@@ -26,17 +58,39 @@ export default function Login() {
                     </div>
                 </div>
 
-                <form className="mt-8 space-y-6" action="/crm/leads">
-                    <input type="hidden" name="remember" defaultValue="true" />
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 animate-shake">
+                            {error}
+                        </div>
+                    )}
 
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 mb-1.5">Correo Electrónico</label>
-                            <input id="email-address" name="email" type="email" required className="appearance-none block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-digitaliate focus:border-transparent transition-all duration-200 sm:text-sm shadow-sm" placeholder="tu@email.com" />
+                            <input 
+                                id="email-address" 
+                                name="email" 
+                                type="email" 
+                                required 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="appearance-none block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-digitaliate focus:border-transparent transition-all duration-200 sm:text-sm shadow-sm" 
+                                placeholder="tu@email.com" 
+                            />
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
-                            <input id="password" name="password" type="password" required className="appearance-none block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-digitaliate focus:border-transparent transition-all duration-200 sm:text-sm shadow-sm" placeholder="••••••••" />
+                            <input 
+                                id="password" 
+                                name="password" 
+                                type="password" 
+                                required 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="appearance-none block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-digitaliate focus:border-transparent transition-all duration-200 sm:text-sm shadow-sm" 
+                                placeholder="••••••••" 
+                            />
                         </div>
                     </div>
 
@@ -56,8 +110,12 @@ export default function Login() {
                     </div>
 
                     <div>
-                        <button type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-digitaliate hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-digitaliate focus:ring-offset-white transition-all duration-200 shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5">
-                            Entrar al CRM
+                        <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-digitaliate hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-digitaliate focus:ring-offset-white transition-all duration-200 shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0"
+                        >
+                            {loading ? "Iniciando..." : "Entrar al CRM"}
                         </button>
                     </div>
                 </form>

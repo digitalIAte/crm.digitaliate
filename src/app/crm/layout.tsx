@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Users, LayoutDashboard, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
+import AuthProvider from "./AuthProvider";
 
 export default function CRMLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -14,9 +15,10 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <div className="flex h-screen bg-[#F8FAFC]">
-            <Sidebar />
-            <main className="flex-1 overflow-y-auto relative">
+        <AuthProvider>
+            <div className="flex h-screen bg-[#F8FAFC]">
+                <Sidebar />
+                <main className="flex-1 overflow-y-auto relative">
                 {/* Subtle top decoration */}
                 <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-digitaliate/10 to-transparent -z-10 pointer-events-none"></div>
 

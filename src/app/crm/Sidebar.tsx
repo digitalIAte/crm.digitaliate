@@ -2,32 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, LayoutDashboard, Settings, BarChart3, MessageSquareText } from "lucide-react";
+import { Users, LayoutDashboard, Settings, BarChart3, MessageSquareText, LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { data: session } = useSession();
     const [newLeadsCount, setNewLeadsCount] = useState(0);
 
-    // Poll for new leads every 30 seconds compared to last visit
+    // ... (keep checkNewLeads logic)
     useEffect(() => {
         const checkNewLeads = async () => {
             try {
-                // If we are ON the leads page, update the "last visited" timestamp
                 if (pathname === "/crm/leads") {
                     localStorage.setItem("last_leads_visit", new Date().toISOString());
                     setNewLeadsCount(0);
                     return;
                 }
 
-                // If not, see how many leads were created since our last visit
                 const lastVisit = localStorage.getItem("last_leads_visit");
                 if (!lastVisit) {
                     localStorage.setItem("last_leads_visit", new Date(Date.now() - 86400000).toISOString());
                     return;
                 }
 
-                // Call a quick analytics endpoint or custom endpoint to check counts
                 const res = await fetch("/api/analytics");
                 const data = await res.json();
 
@@ -61,7 +60,6 @@ export default function Sidebar() {
                 <Link href="/crm" className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-digitaliate to-digitaliate-dark">
                     DIGITALIATE CRM
                 </Link>
-                <span className="ml-2 text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded">DIRECT-DB-V2</span>
             </div>
 
             <nav className="flex-1 px-4 py-6 space-y-1">
@@ -89,7 +87,7 @@ export default function Sidebar() {
 
                             {item.badge ? (
                                 <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-                                    {item.badge} Novedades
+                                    {item.badge}
                                 </span>
                             ) : null}
                         </Link>
@@ -97,11 +95,30 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            <div className="p-4 border-t border-gray-50">
+            <div className="p-4 border-t border-gray-50 space-y-4">
+                {session?.user && (
+                    <div className="flex items-center px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
+                        <div className="w-8 h-8 rounded-full bg-digitaliate/20 text-digitaliate flex items-center justify-center mr-3 shadow-inner">
+                            <User className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-gray-900 truncate">{session.user.name || "Usuario"}</p>
+                            <p className="text-[10px] text-gray-500 truncate">{session.user.email}</p>
+                        </div>
+                    </div>
+                )}
+                
+                <button 
+                    onClick={() => signOut()}
+                    className="w-full flex items-center px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                    <LogOut className="mr-3 h-5 w-5" />
+                    Cerrar Sesión
+                </button>
+
                 <div className="bg-gradient-to-br from-digitaliate/5 to-digitaliate-dark/5 rounded-xl p-4 text-center border border-digitaliate/10">
-                    <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Desarrollado por</p>
-                    <div className="font-bold text-gray-800 tracking-tight">Abdel Otsmani</div>
-                    <div className="text-[10px] font-semibold text-digitaliate mt-1 uppercase">AI-Powered System</div>
+                    <p className="text-[9px] font-bold text-gray-400 mb-1 uppercase tracking-tight">Direct Access Mode</p>
+                    <div className="font-bold text-gray-700 text-xs truncate">Abdel Otsmani</div>
                 </div>
             </div>
         </aside>

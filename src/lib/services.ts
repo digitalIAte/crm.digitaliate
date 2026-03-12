@@ -189,3 +189,48 @@ export async function updateKanbanColumn(id: string, title: string): Promise<boo
         client.release();
     }
 }
+
+export async function getWorkspaceSettings() {
+    const client = await pool.connect();
+    try {
+        const res = await client.query("SELECT * FROM workspace_settings WHERE id = 1");
+        return res.rows[0];
+    } finally {
+        client.release();
+    }
+}
+
+export async function updateWorkspaceSettings(agency_name: string, n8n_webhook_url: string, primary_color: string) {
+    const client = await pool.connect();
+    try {
+        await client.query(
+            "UPDATE workspace_settings SET agency_name = $1, n8n_webhook_url = $2, primary_color = $3 WHERE id = 1",
+            [agency_name, n8n_webhook_url, primary_color]
+        );
+        return true;
+    } catch (e) {
+        console.error("Update settings error:", e);
+        return false;
+    } finally {
+        client.release();
+    }
+}
+
+export async function updatePassword(userId: string, currentPass: string, newPass: string) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query("SELECT password FROM users WHERE id = $1", [userId]);
+        if (res.rows.length === 0) return { success: false, error: "Usuario no encontrado" };
+
+        const isValid = await bcrypt.compare(currentPass, res.rows[0].password);
+        if (!isValid) return { success: false, error: "Contraseña actual incorrecta" };
+
+        const hashed = await bcrypt.hash(newPass, 10);
+        await client.query("UPDATE users SET password = $1 WHERE id = $2", [hashed, userId]);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    } finally {
+        client.release();
+    }
+}

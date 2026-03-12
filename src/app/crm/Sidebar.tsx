@@ -10,6 +10,18 @@ export default function Sidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
     const [newLeadsCount, setNewLeadsCount] = useState(0);
+    const [agencyName, setAgencyName] = useState("DIGITALIATE CRM");
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch("/api/settings");
+                const data = await res.json();
+                if (data.agency_name) setAgencyName(data.agency_name.toUpperCase());
+            } catch (e) {}
+        };
+        fetchSettings();
+    }, []);
 
     // ... (keep checkNewLeads logic)
     useEffect(() => {
@@ -57,8 +69,8 @@ export default function Sidebar() {
     return (
         <aside className="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm z-10">
             <div className="h-16 flex items-center px-6 border-b border-gray-50">
-                <Link href="/crm" className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-digitaliate to-digitaliate-dark">
-                    DIGITALIATE CRM
+                <Link href="/crm" className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-digitaliate to-digitaliate-dark truncate">
+                    {agencyName}
                 </Link>
             </div>
 

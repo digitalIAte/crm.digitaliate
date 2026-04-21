@@ -13,6 +13,10 @@ export async function createUserAction(formData: FormData) {
         return { success: false, error: "Todos los campos son obligatorios" };
     }
 
+    if (role === 'superadmin') {
+        return { success: false, error: "No puedes crear usuarios con el rol superadmin." };
+    }
+
     const result = await createUser(name, email, password, role);
     if (result.success) {
         revalidatePath("/crm/users");
@@ -24,8 +28,9 @@ export async function createUserAction(formData: FormData) {
 export async function updateUserRoleAction(id: string, role: string) {
     if (!id || !role) return { success: false, error: "ID o rol no válido" };
     
-    // Safety check conceptually: prevent demoting oneself could be done here 
-    // if we pass session email, but we'll keep it simple.
+    if (role === 'superadmin') {
+        return { success: false, error: "No se puede asignar el rol superadmin a otros usuarios." };
+    }
 
     const result = await updateUserRole(id, role);
     if (result.success) {

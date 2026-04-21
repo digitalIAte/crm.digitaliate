@@ -137,9 +137,9 @@ export default function UsersClient({ users }: { users: any[] }) {
                                                 ${(isPending || u.email === 'admin@digitaliate.com') ? 'opacity-50 cursor-not-allowed' : ''}
                                             `}
                                         >
-                                            <option value="superadmin">Superadmin</option>
                                             <option value="manager">Manager</option>
                                             <option value="agent">Agent</option>
+                                            {u.role === 'superadmin' && <option value="superadmin">Superadmin</option>}
                                         </select>
                                         {u.email === 'admin@digitaliate.com' && <span className="text-[10px] text-gray-400 block mt-1">Admin principal</span>}
                                     </td>
@@ -222,7 +222,6 @@ export default function UsersClient({ users }: { users: any[] }) {
                                 >
                                     <option value="agent">Agente (Solo ve sus Leads asignados)</option>
                                     <option value="manager">Manager (Ve y reasigna todos los Leads)</option>
-                                    <option value="superadmin">Superadmin (Acceso total, Ajustes, Usuarios)</option>
                                 </select>
                             </div>
 

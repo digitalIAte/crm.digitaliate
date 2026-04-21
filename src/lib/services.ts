@@ -66,6 +66,9 @@ export async function ensureDatabaseReady() {
                 "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, 'superadmin')",
                 ["Admin", "admin@digitaliate.com", hashed]
             );
+        } else {
+            // Hotfix: Ensure the default admin keeps superadmin rights after RBAC migration
+            await client.query("UPDATE users SET role = 'superadmin' WHERE email = 'admin@digitaliate.com'");
         }
 
         // Leads Assignee column

@@ -14,12 +14,13 @@ export async function GET() {
             `);
 
             // 2. Leads by day (last 7 days)
+            // Use TO_CHAR to get a consistent YYYY-MM-DD string from the database server directly
             const daysRes = await client.query(`
-                SELECT DATE(created_at) as date, COUNT(*) as count
+                SELECT TO_CHAR(created_at, 'YYYY-MM-DD') as date_key, COUNT(*) as count
                 FROM leads
                 WHERE created_at >= CURRENT_DATE - INTERVAL '6 days'
-                GROUP BY DATE(created_at)
-                ORDER BY date ASC
+                GROUP BY date_key
+                ORDER BY date_key ASC
             `);
 
             // 3. Score distribution
@@ -34,15 +35,20 @@ export async function GET() {
             // Build a full 7-day series filling missing days with 0
             const dbDayMap = new Map<string, number>();
             for (const row of daysRes.rows) {
-                const key = new Date(row.date).toISOString().split("T")[0];
-                dbDayMap.set(key, parseInt(row.count));
+                dbDayMap.set(row.date_key, parseInt(row.count));
             }
 
             const leadsByDay = [];
+            // Generate last 7 days keys in local time (or rather, the server's current date context)
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
-                const key = d.toISOString().split("T")[0];
+                // Manual format YYYY-MM-DD to avoid ISO timezone shift
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const key = `${year}-${month}-${day}`;
+                
                 leadsByDay.push({ date: key, count: dbDayMap.get(key) ?? 0 });
             }
 

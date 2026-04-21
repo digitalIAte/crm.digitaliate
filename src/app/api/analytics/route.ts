@@ -31,9 +31,24 @@ export async function GET() {
                 FROM leads
             `);
 
+            // Build a full 7-day series filling missing days with 0
+            const dbDayMap = new Map<string, number>();
+            for (const row of daysRes.rows) {
+                const key = new Date(row.date).toISOString().split("T")[0];
+                dbDayMap.set(key, parseInt(row.count));
+            }
+
+            const leadsByDay = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = d.toISOString().split("T")[0];
+                leadsByDay.push({ date: key, count: dbDayMap.get(key) ?? 0 });
+            }
+
             return NextResponse.json({
                 statusDistribution: statusRes.rows,
-                leadsByDay: daysRes.rows,
+                leadsByDay,
                 scoreDistribution: scoreRes.rows[0]
             });
         } finally {

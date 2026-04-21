@@ -119,7 +119,7 @@ export default function LeadActions({ lead, columns, userRole, users = [] }: { l
                             className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 text-sm"
                         >
                             <option value="">Unassigned</option>
-                            {users.map(u => (
+                            {users.filter(u => u.role !== 'superadmin').map(u => (
                                 <option key={u.id} value={u.id.toString()}>{u.name || u.email}</option>
                             ))}
                         </select>

@@ -294,3 +294,47 @@ export async function getUsers() {
         client.release();
     }
 }
+
+export async function createUser(name: string, email: string, passwordPlain: string, role: string) {
+    const client = await pool.connect();
+    try {
+        const hashed = await bcrypt.hash(passwordPlain, 10);
+        await client.query(
+            "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)",
+            [name, email, hashed, role]
+        );
+        return { success: true };
+    } catch (e: any) {
+        if (e.code === '23505') {
+            return { success: false, error: "El email ya está registrado" };
+        }
+        return { success: false, error: e.message };
+    } finally {
+        client.release();
+    }
+}
+
+export async function updateUserRole(id: string, role: string) {
+    const client = await pool.connect();
+    try {
+        await client.query("UPDATE users SET role = $1 WHERE id = $2", [role, id]);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    } finally {
+        client.release();
+    }
+}
+
+export async function deleteUser(id: string) {
+    const client = await pool.connect();
+    try {
+        // Unassign leads first if necessary, or rely on ON DELETE SET NULL
+        await client.query("DELETE FROM users WHERE id = $1", [id]);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    } finally {
+        client.release();
+    }
+}

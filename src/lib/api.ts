@@ -9,6 +9,7 @@ export interface Lead {
     owner_email: string;
     created_at: string;
     tags?: string[];
+    assigned_to?: number;
 }
 
 export async function fetchLeads(): Promise<Lead[]> {

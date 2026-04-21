@@ -12,6 +12,7 @@ export interface Lead {
     owner_email: string;
     created_at: string;
     tags?: string[];
+    assigned_to?: number;
 }
 
 /**
@@ -41,12 +42,17 @@ export async function ensureDatabaseReady() {
         `);
 
         // 2. Users Table
+        try {
+            await client.query("ALTER TABLE users ADD COLUMN role VARCHAR(50) DEFAULT 'agent';");
+        } catch (e: any) {}
+
         await client.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100),
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
+                role VARCHAR(50) DEFAULT 'agent',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
@@ -57,10 +63,15 @@ export async function ensureDatabaseReady() {
             console.log("Provisioning default admin user...");
             const hashed = await bcrypt.hash("admin123", 10);
             await client.query(
-                "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
+                "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, 'superadmin')",
                 ["Admin", "admin@digitaliate.com", hashed]
             );
         }
+
+        // Leads Assignee column
+        try {
+            await client.query("ALTER TABLE leads ADD COLUMN assigned_to INTEGER REFERENCES users(id) ON DELETE SET NULL;");
+        } catch (e: any) {}
 
         // 4. Workspace Settings Table
         // Note: Adding a new column calendly_url if it doesn't exist. Easiest way in Postgres without breaking is to try adding it.
@@ -108,24 +119,38 @@ export async function ensureDatabaseReady() {
     }
 }
 
-export async function getLeads(): Promise<Lead[]> {
+export async function getLeads(userId?: string, role?: string): Promise<Lead[]> {
     const client = await pool.connect();
     try {
-        const result = await client.query(`
-            SELECT * FROM leads 
-            ORDER BY created_at DESC 
-            LIMIT 1000
-        `);
+        let query = "SELECT * FROM leads";
+        const params: any[] = [];
+        
+        if (role === 'agent' && userId) {
+            query += " WHERE assigned_to = $1";
+            params.push(userId);
+        }
+        
+        query += " ORDER BY created_at DESC LIMIT 1000";
+        
+        const result = await client.query(query, params);
         return result.rows;
     } finally {
         client.release();
     }
 }
 
-export async function getLeadById(id: string) {
+export async function getLeadById(id: string, userId?: string, role?: string) {
     const client = await pool.connect();
     try {
-        const leadRes = await client.query("SELECT * FROM leads WHERE id = $1", [id]);
+        let query = "SELECT * FROM leads WHERE id = $1";
+        const params: any[] = [id];
+        
+        if (role === 'agent' && userId) {
+            query += " AND assigned_to = $2";
+            params.push(userId);
+        }
+        
+        const leadRes = await client.query(query, params);
         if (leadRes.rows.length === 0) return null;
 
         const convsRes = await client.query(
@@ -252,6 +277,16 @@ export async function updatePassword(userId: string, currentPass: string, newPas
         return { success: true };
     } catch (e: any) {
         return { success: false, error: e.message };
+    } finally {
+        client.release();
+    }
+}
+
+export async function getUsers() {
+    const client = await pool.connect();
+    try {
+        const res = await client.query("SELECT id, name, email, role FROM users ORDER BY name ASC");
+        return res.rows;
     } finally {
         client.release();
     }

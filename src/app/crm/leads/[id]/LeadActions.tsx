@@ -7,7 +7,7 @@ import { KanbanColumn } from "@/lib/services";
 import { submitLeadUpdate, submitNewActivity, triggerWhatsApp, triggerEmail, deleteLead } from "./actions";
 import { Mail, MessageCircle, Trash2 } from "lucide-react";
 
-export default function LeadActions({ lead, columns }: { lead: Lead, columns: KanbanColumn[] }) {
+export default function LeadActions({ lead, columns, userRole, users = [] }: { lead: Lead, columns: KanbanColumn[], userRole: string, users?: any[] }) {
     const router = useRouter();
     const [isUpdating, setIsUpdating] = useState(false);
     const [note, setNote] = useState("");
@@ -43,6 +43,19 @@ export default function LeadActions({ lead, columns }: { lead: Lead, columns: Ka
         } catch (error) {
             setCurrentStage(prevStage); // Revert on error
             alert("Failed to update stage");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleAssigneeChange = async (newAssigneeId: string) => {
+        setIsUpdating(true);
+        try {
+            const val = newAssigneeId === "" ? null : parseInt(newAssigneeId);
+            await submitLeadUpdate(lead.id, { assigned_to: val });
+            router.refresh();
+        } catch (error) {
+            alert("Failed to reassign lead");
         } finally {
             setIsUpdating(false);
         }
@@ -96,6 +109,22 @@ export default function LeadActions({ lead, columns }: { lead: Lead, columns: Ka
                         <option value="won">Won</option>
                     </select>
                 </div>
+                {userRole !== 'agent' && users && users.length > 0 && (
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase">Assigned To</label>
+                        <select
+                            disabled={isUpdating}
+                            defaultValue={lead.assigned_to?.toString() || ""}
+                            onChange={(e) => handleAssigneeChange(e.target.value)}
+                            className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 text-sm"
+                        >
+                            <option value="">Unassigned</option>
+                            {users.map(u => (
+                                <option key={u.id} value={u.id.toString()}>{u.name || u.email}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 {isUpdating && <div className="flex items-center text-sm text-digitaliate animate-pulse mt-4">Saving...</div>}
             </div>
 
@@ -151,27 +180,29 @@ export default function LeadActions({ lead, columns }: { lead: Lead, columns: Ka
                 </button>
             </div>
 
-            {/* Danger Zone */}
-            <div className="mt-8 pt-4 border-t border-red-100">
-                <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-3">Danger Zone</h4>
-                <button
-                    onClick={async () => {
-                        const confirmed = window.confirm(`Are you sure you want to permanently delete the lead for ${lead.name}? This action cannot be undone.`);
-                        if (!confirmed) return;
-                        const ok = await deleteLead(lead.id, lead.email);
-                        if (ok) {
-                            router.push("/crm/leads");
-                            router.refresh();
-                        } else {
-                            alert("Failed to delete lead. Please try again.");
-                        }
-                    }}
-                    className="flex items-center space-x-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm"
-                >
-                    <Trash2 size={15} />
-                    <span>Delete Lead</span>
-                </button>
-            </div>
+            {/* Danger Zone - Only for Superadmin */}
+            {userRole === 'superadmin' && (
+                <div className="mt-8 pt-4 border-t border-red-100">
+                    <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-3">Danger Zone</h4>
+                    <button
+                        onClick={async () => {
+                            const confirmed = window.confirm(`Are you sure you want to permanently delete the lead for ${lead.name}? This action cannot be undone.`);
+                            if (!confirmed) return;
+                            const ok = await deleteLead(lead.id, lead.email);
+                            if (ok) {
+                                router.push("/crm/leads");
+                                router.refresh();
+                            } else {
+                                alert("Failed to delete lead. Please try again.");
+                            }
+                        }}
+                        className="flex items-center space-x-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm"
+                    >
+                        <Trash2 size={15} />
+                        <span>Delete Lead</span>
+                    </button>
+                </div>
+            )}
         </>
     );
 }

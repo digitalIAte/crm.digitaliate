@@ -1,18 +1,24 @@
-import { getLeadById, getKanbanColumns, getWorkspaceSettings } from "@/lib/services";
+import { getLeadById, getKanbanColumns, getWorkspaceSettings, getUsers } from "@/lib/services";
 import Link from "next/link";
 import LeadActions from "./LeadActions";
 import TagsEditor from "./TagsEditor";
 import RemindersPanel from "./RemindersPanel";
 import DuplicateDetector from "./DuplicateDetector";
 import AppointmentsPanel from "./AppointmentsPanel";
+import { getServerSession } from "next-auth/next";
 
 export const dynamic = "force-dynamic";
 
 export default async function LeadDetailPage({ params }: { params: { id: string } }) {
-    const [rawData, columns, settings] = await Promise.all([
-        getLeadById(params.id),
+    const session = await getServerSession() as any;
+    const userId = session?.user?.id;
+    const userRole = session?.user?.role;
+
+    const [rawData, columns, settings, users] = await Promise.all([
+        getLeadById(params.id, userId, userRole),
         getKanbanColumns(),
-        getWorkspaceSettings()
+        getWorkspaceSettings(),
+        userRole !== 'agent' ? getUsers() : Promise.resolve([])
     ]);
 
     if (!rawData || !rawData.lead) {
@@ -79,7 +85,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
                     <div className="bg-white shadow-sm rounded-xl border border-gray-100 p-6 space-y-4">
                         <h3 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Interaction Tracking</h3>
 
-                        <LeadActions lead={lead} columns={columns} />
+                        <LeadActions lead={lead} columns={columns} userRole={userRole || 'agent'} users={users} />
 
                         <div className="mt-8 space-y-3">
                             <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Activity Log</h4>

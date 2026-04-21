@@ -38,6 +38,7 @@ const handler = NextAuth({
                         id: user.id.toString(),
                         email: user.email,
                         name: user.name,
+                        role: user.role || 'agent'
                     };
                 } catch (error) {
                     console.error("Auth error:", error);
@@ -55,12 +56,14 @@ const handler = NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                token.role = (user as any).role || 'agent';
             }
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
                 (session.user as any).id = token.id;
+                (session.user as any).role = token.role;
             }
             return session;
         }

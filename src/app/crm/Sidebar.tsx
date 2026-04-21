@@ -58,13 +58,16 @@ export default function Sidebar() {
         return () => clearInterval(interval);
     }, [pathname]);
 
+    const userRole = (session?.user as any)?.role || 'agent';
+    const isAdmin = userRole === 'superadmin';
+
     const navigation = [
         { name: "Dashboard", href: "/crm", icon: LayoutDashboard },
         { name: "Calendario", href: "/crm/calendar", icon: CalendarIcon },
         { name: "Leads Pipeline", href: "/crm/leads", icon: Users, badge: newLeadsCount },
         { name: "Analytics", href: "/crm/analytics", icon: BarChart3 },
         { name: "Plantillas", href: "/crm/templates", icon: MessageSquareText },
-        { name: "Settings", href: "/crm/settings", icon: Settings },
+        ...(isAdmin ? [{ name: "Settings", href: "/crm/settings", icon: Settings }] : []),
     ];
 
     return (

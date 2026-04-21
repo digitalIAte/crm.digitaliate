@@ -1,12 +1,17 @@
 import { getLeads, getKanbanColumns } from "@/lib/services";
 import LeadsPageClient from "./LeadsPageClient";
+import { getServerSession } from "next-auth/next";
 
 export const dynamic = "force-dynamic";
 
 export default async function LeadsPage() {
     try {
+        const session = await getServerSession() as any;
+        const userId = session?.user?.id;
+        const userRole = session?.user?.role;
+
         const [leads, columns] = await Promise.all([
-            getLeads(),
+            getLeads(userId, userRole),
             getKanbanColumns()
         ]);
         console.log(`LeadsPage fetched ${leads?.length || 0} leads and ${columns?.length || 0} columns`);

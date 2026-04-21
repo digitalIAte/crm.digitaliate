@@ -2,7 +2,8 @@
 
 import { updateWorkspaceSettings, updatePassword } from "@/lib/services";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function saveSettingsAction(formData: FormData) {
     const agencyName = formData.get("agencyName") as string;
@@ -20,7 +21,7 @@ export async function saveSettingsAction(formData: FormData) {
 }
 
 export async function changePasswordAction(formData: FormData) {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions) as any;
     if (!session?.user?.email) return { success: false, error: "No autenticado" };
 
     const currentPass = formData.get("currentPassword") as string;

@@ -1,12 +1,13 @@
 import { getLeads, getKanbanColumns } from "@/lib/services";
 import LeadsPageClient from "./LeadsPageClient";
 import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 
 export default async function LeadsPage() {
     try {
-        const session = await getServerSession() as any;
+        const session = await getServerSession(authOptions) as any;
         const userId = session?.user?.id;
         const userRole = session?.user?.role;
 

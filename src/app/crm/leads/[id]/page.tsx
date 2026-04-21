@@ -6,11 +6,12 @@ import RemindersPanel from "./RemindersPanel";
 import DuplicateDetector from "./DuplicateDetector";
 import AppointmentsPanel from "./AppointmentsPanel";
 import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 
 export default async function LeadDetailPage({ params }: { params: { id: string } }) {
-    const session = await getServerSession() as any;
+    const session = await getServerSession(authOptions) as any;
     const userId = session?.user?.id;
     const userRole = session?.user?.role;
 

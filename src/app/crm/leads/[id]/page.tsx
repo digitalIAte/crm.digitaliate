@@ -6,7 +6,7 @@ import RemindersPanel from "./RemindersPanel";
 import DuplicateDetector from "./DuplicateDetector";
 import AppointmentsPanel from "./AppointmentsPanel";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 

@@ -3,7 +3,7 @@
 import { updateWorkspaceSettings, updatePassword } from "@/lib/services";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function saveSettingsAction(formData: FormData) {
     const agencyName = formData.get("agencyName") as string;

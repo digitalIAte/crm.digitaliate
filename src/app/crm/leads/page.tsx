@@ -1,7 +1,7 @@
 import { getLeads, getKanbanColumns } from "@/lib/services";
 import LeadsPageClient from "./LeadsPageClient";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
